@@ -8,15 +8,16 @@ entry start
 segment readable executable
 
 macro print_times times, str, str_len {
-    push rax
-    push rbx
-    push rdi
-    push rsi
-    push rdx
+  local .loop
 
-    local .loop
+  push rax
+  push rbx
+  push rdi
+  push rsi
+  push rdx
 
-    mov rbx, times
+  mov rbx, times
+
   .loop:
     xor rax, rax
     inc rax
@@ -38,12 +39,12 @@ macro print_times times, str, str_len {
 
 
 start:
-    print_times 2, msg1, msg1_len
-    print_times 3, msg2, msg2_len
+  print_times 2, msg1, msg1_len
+  print_times 3, msg2, msg2_len
 
-    mov rax, 60
-    xor rdi, rdi
-    syscall
+  mov rax, 60
+  xor rdi, rdi
+  syscall
 
 
 
