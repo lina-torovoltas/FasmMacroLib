@@ -7,7 +7,7 @@ entry start
 
 segment readable executable
 
-macro print_number buf, buf_size {
+macro print_number buffer {
     push rdi
     push rsi
     push rdx
@@ -17,8 +17,8 @@ macro print_number buf, buf_size {
 
     local .convert
 
-    mov rdi, buf
-    add rdi, buf_size - 1
+    mov rdi, buffer
+    add rdi, 31
     mov byte [rdi], 0
 
     mov rcx, 10
@@ -38,8 +38,8 @@ macro print_number buf, buf_size {
     inc rax
     xor rdi, rdi
     inc rdi
-    mov rdx, buf
-    add rdx, buf_size
+    mov rdx, buffer
+    add rdx, 32
     sub rdx, rsi
     syscall
 
@@ -48,7 +48,7 @@ macro print_number buf, buf_size {
     xor rdi, rdi
     inc rdi
     mov rsi, newline
-    mov rdx, len_newline
+    mov rdx, newline_len
     syscall
 
     pop rax
@@ -62,16 +62,16 @@ macro print_number buf, buf_size {
 
 start:
     mov rax, 1234
-    print_num buffer, 32
+    print_number buffer
 
     mov rax, 18446744073709551615
-    print_num buffer, 64
+    print_number buffer
 
     mov rax, 0
-    print_num buffer, 32
+    print_number buffer
 
     mov rax, 244939252
-    print_num buffer, 32
+    print_number buffer
 
     mov rax, 60
     xor rdi, rdi
@@ -82,6 +82,6 @@ start:
 segment readable writeable
 
 newline db 10
-len_newline = $ - newline
+newline_len = $ - newline
 
-buffer rb 64
+buffer rb 32
