@@ -1,5 +1,5 @@
-# FasmMacroLib
-Macro library for FASM (Flat Assembler) for Linux
+# FasmMacrosLib
+Macros library for FASM (Flat Assembler) for Linux
 
 ## Installation
 
