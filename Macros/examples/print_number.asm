@@ -8,7 +8,6 @@ entry start
 segment readable executable
 
 macro printnum value {
-    push r8
     push rdi
     push rcx
     push rbx

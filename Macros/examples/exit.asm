@@ -11,7 +11,7 @@ macro exit value {
     mov rax, 60
     mov rdi, value
     syscall
-    }
+}
 
 
 start:

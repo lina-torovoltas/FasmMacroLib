@@ -6,7 +6,7 @@ Macros library for FASM (Flat Assembler) for Linux
 Just include the macros file at the beginning of your .asm file:
 
 ```asm
-include 'fasmmacroslib.inc'
+include 'macroslib.inc'
 ```
 
 ## Macros
