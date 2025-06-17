@@ -7,12 +7,12 @@ entry start
 
 segment readable executable
 
-macro exit {
+macro exit value {
     mov rax, 60
-    xor rdi, rdi
+    mov rdi, value
     syscall
     }
 
 
 start:
-    exit
+    exit 0

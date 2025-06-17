@@ -7,7 +7,7 @@ entry start
 
 segment readable executable
 
-macro printnum buffer, value {
+macro printnum value {
     push r8
     push rdi
     push rcx
@@ -64,10 +64,10 @@ macro printnum buffer, value {
 
 
 start:
-    printnum buffer, 1234
-    printnum buffer, 18446744073709551615
-    printnum buffer, 0
-    printnum buffer, 244939252
+    printnum 1234
+    printnum 18446744073709551615
+    printnum 0
+    printnum 244939252
 
     mov rax, 60
     xor rdi, rdi

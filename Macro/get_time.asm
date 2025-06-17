@@ -7,7 +7,7 @@ entry start
 
 segment readable executable
 
-macro get_time {
+macro time {
     push rdi
 
     mov rax, 201
@@ -20,7 +20,7 @@ macro get_time {
 
 
 start:
-    get_time
+    time
 
     mov rax, 60
     xor rdi, rdi
