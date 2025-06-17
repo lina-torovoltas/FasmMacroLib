@@ -30,7 +30,7 @@ macro printnum buffer, value {
     dec rdi
     xor rdx, rdx
     div rcx
-    add dl, '0'stra
+    add dl, '0'
     mov [rdi], dl
     test rax, rax
     jnz .convert
