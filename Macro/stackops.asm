@@ -14,10 +14,8 @@ macro pop [arg] { pop arg }
 macro print str, str_len {
     push rax, rdi, rsi, rdx
 
-    xor rax, rax
-    inc rax
-    xor rdi, rdi
-    inc rdi
+    mov rax, 1
+    mov rdi, 1
     mov rsi, str
     mov rdx, str_len
     syscall

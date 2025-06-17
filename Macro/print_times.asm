@@ -7,44 +7,47 @@ entry start
 
 segment readable executable
 
-macro print_times times, str, str_len {
-  local .loop
+macro printtim times, str, str_len {
+    local .loop
 
-  push rax
-  push rbx
-  push rdi
-  push rsi
-  push rdx
+    push r8
+    push rbx
+    push rdi
+    push rsi
+    push rdx
 
-  mov rbx, times
+    xor r8, r8
+    mov rbx, times
 
-  .loop:
-    xor rax, rax
-    inc rax
-    xor rdi, rdi
-    inc rdi
-    mov rsi, str
-    mov rdx, str_len
-    syscall
+    .loop:
+        mov rax, 1
+        mov rdi, 1
+        mov rsi, str
+        mov rdx, str_len
+        syscall
 
-    dec rbx
-    jnz .loop
+        add r8, rax
+
+        dec rbx
+        jnz .loop
+
+    mov rax, r8
 
     pop rdx
     pop rsi
     pop rdi
     pop rbx
-    pop rax
+    pop r8
 }
 
 
 start:
-  print_times 2, msg1, msg1_len
-  print_times 3, msg2, msg2_len
+    printtim 2, msg1, msg1_len
+    printtim 3, msg2, msg2_len
 
-  mov rax, 60
-  xor rdi, rdi
-  syscall
+    mov rax, 60
+    xor rdi, rdi
+    syscall
 
 
 

@@ -7,7 +7,7 @@ entry start
 
 segment readable executable
 
-macro run_command command {
+macro run command {
     local .path, .arg2str, .arg3str, .argv
 
     mov rax, 59
@@ -24,4 +24,4 @@ macro run_command command {
 
 
 start:
-    run_command "echo test"
+    run "echo test"

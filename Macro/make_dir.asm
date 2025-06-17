@@ -7,25 +7,22 @@ entry start
 
 segment readable executable
 
-macro print str, str_len {
+macro mkdir dir_name, permissions {
     push rdi
     push rsi
-    push rdx
 
-    mov rax, 1
-    mov rdi, 1
-    mov rsi, str
-    mov rdx, str_len
+    mov rax, 83
+    mov rdi, dir_name
+    mov rsi, permissions
     syscall
 
-    pop rdx
     pop rsi
     pop rdi
 }
 
 
 start:
-    print msg, msg_len
+    mkdir name, 777o
 
     mov rax, 60
     xor rdi, rdi
@@ -35,5 +32,4 @@ start:
 
 segment readable writeable
 
-msg db 'Test output string', 10
-msg_len = $ - msg
+name db "test", 0
