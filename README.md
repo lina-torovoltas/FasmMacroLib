@@ -1,5 +1,15 @@
-# FasmMacrosLib
-Macros library for FASM (Flat Assembler) for Linux
+## FasmMacroLib
+
+![License](https://img.shields.io/github/license/lina-torovoltas/FasmMacrosLib)
+![Version](https://img.shields.io/github/v/release/lina-torovoltas/FasmMacrosLib)
+![Downloads](https://img.shields.io/github/downloads/lina-torovoltas/FasmMacrosLib/total)</br>
+FasmMacrosLib is a macro library for simplifying FASM programming on 64-bit Linux.
+
+
+## Dependencies
+
+Works only on Linux x86_64 (64-bit).
+
 
 ## Installation
 
@@ -9,12 +19,16 @@ Just include the macros file at the beginning of your .asm file:
 include 'macroslib.inc'
 ```
 
-## Macros
+
+## Usage
+
+Below is a detailed list of available macros and their usage.</br>
+For practical examples, see [examples folder](macroslib/examples).</br>
+Compiled binaries of these examples are available in the [releases](https://github.com/lina-torovoltas/FasmMacrosLib/releases) section.
 
 ### clr
 Clears the specified register (sets it to zero).
 
-Usage:
 ```asm
 clr rax
 ```
@@ -22,7 +36,6 @@ clr rax
 ### exit
 Terminates the program with a specified exit code.
 
-Usage:
 ```asm
 exit 0         ; exit with code 0
 exit 1         ; exit with code 1
@@ -31,75 +44,60 @@ exit 1         ; exit with code 1
 ### time
 Stores the current time (seconds since January 1, 1970) in register rax.
 
-Usage:
 ```asm
 time
-; rax now contains the Unix timestamp
 ```
-
 
 ### mkdir
-Creates a directory with the given name and permissions (e.g., 777o for octal 0777).  
+Creates a directory with the given name and permissions (octal format).</br>
 Returns error code in rax.
 
-Usage:
 ```asm
-mkdir name, 777o
+mkdir "test", 777o
 ```
 
-
 ### rmdir
-Removes the specified directory.  
+Removes the specified directory.</br>
 Returns error code in rax.
 
-Usage:
 ```asm
-rmdir name
+rmdir "test"
 ```
 
 ### printnum
-Prints the given number in decimal.  
+Prints the given number in decimal.</br>
 Returns the number of bytes printed in rax.
 
-Usage:
 ```asm
-printnum 1234
+printnum 244939252
 ```
-
 
 ### print
-Prints the string at the given address with the specified length.  
+Prints the string at the given address with the specified length.</br>
 Returns the number of bytes printed in rax.
 
-Usage:
 ```asm
-print msg, msg_len
+print "test", 4
 ```
-
 
 ### printtim
-Prints the given string a specified number of times.  
-Returns the total number of bytes printed in rax.
+Prints the given string a specified number of times.</br>
+Returns the number of bytes printed in rax.
 
-Usage:
 ```asm
-printtim 2, msg, msg_len
+printtim 2, "test", 4
 ```
-
 
 ### run
 Executes the specified shell command.
 
-Usage:
 ```asm
-run "echo Hello"
+run "echo test"
 ```
-
 
 ### push / pop
 Pushes or pops multiple registers on/from the stack (like multiple push/pop instructions combined).
 
-Usage:
 ```asm
 push rax, rdi, rsi, rdx
 ...
@@ -107,6 +105,12 @@ pop rdx, rsi, rdi, rax
 ```
 
 
-## Dependencies
+## Contributing
 
-Works only on Linux x86_64.
+Contributions are welcome!</br>
+Feel free to open pull requests to improve the library.
+
+
+## Author
+
+Developed by <a href="https://github.com/lina-torovoltas" style="color:#ff4f00">Lina Torovoltas</a> — © 2025 All rights reserved.

@@ -1,14 +1,12 @@
-; This macro only works on Linux!!!
+; This code works only on 64-bit Linux!!!
 
 format ELF64 executable 3
+include '../macrolib.inc'
 entry start
 
 
 
 segment readable executable
-
-macro clr reg { xor reg,reg }
-
 
 start:
     mov rax, 60

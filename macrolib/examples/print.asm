@@ -1,28 +1,12 @@
-; This macro only works on Linux!!!
+; This code works only on 64-bit Linux!!!
 
 format ELF64 executable 3
+include '../macrolib.inc'
 entry start
 
 
 
 segment readable executable
-
-macro print str, str_len {
-    push rdi
-    push rsi
-    push rdx
-
-    mov rax, 1
-    mov rdi, 1
-    mov rsi, str
-    mov rdx, str_len
-    syscall
-
-    pop rdx
-    pop rsi
-    pop rdi
-}
-
 
 start:
     print msg, msg_len
