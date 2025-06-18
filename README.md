@@ -23,8 +23,16 @@ include 'macroslib.inc'
 ## Usage
 
 Below is a detailed list of available macros and their usage.</br>
+
 For practical examples, see [examples folder](macroslib/examples).</br>
-Compiled binaries of these examples are available in the [releases](https://github.com/lina-torovoltas/FasmMacrosLib/releases) section.
+Compiled binaries of these examples are available in the [releases](https://github.com/lina-torovoltas/FasmMacrosLib/releases) section.</br>
+
+Alternatively, you can compile them yourself by running:
+
+```bash
+cd FasmMacroLib
+make
+```
 
 ### clr
 Clears the specified register (sets it to zero).
