@@ -1,1 +1,5 @@
-build/
+build_x86/
+build_x86_64/
+build_arm32/
+build_arm64/
+.vscode

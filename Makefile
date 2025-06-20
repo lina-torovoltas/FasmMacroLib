@@ -1,17 +1,58 @@
-SRC_DIR := macrolib/examples
-BUILD_DIR := build
+FASM = fasm
 
-ASM_SOURCES := $(wildcard $(SRC_DIR)/*.asm)
+# Пути исходников
+SRC_x86 = macrolib_x86/examples
+SRC_x86_64 = macrolib_x86_64/examples
+SRC_arm32 = macrolib_arm32/examples
+SRC_arm64 = macrolib_arm64/examples
 
-BINARIES := $(patsubst $(SRC_DIR)/%.asm, $(BUILD_DIR)/%, $(ASM_SOURCES))
+# Папки сборки
+BUILD_x86 = build_x86
+BUILD_x86_64 = build_x86_64
+BUILD_arm32 = build_arm32
+BUILD_arm64 = build_arm64
 
-all: $(BUILD_DIR) $(BINARIES)
+.PHONY: all clean x86 x86_64 arm32 arm64
 
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+all: x86 x86_64 arm32 arm64
 
-$(BUILD_DIR)/%: $(SRC_DIR)/%.asm | $(BUILD_DIR)
-	fasm $< $@
+x86:
+	@echo "Building x86..."
+	@mkdir -p $(BUILD_x86)
+	@for file in $(SRC_x86)/*.asm; do \
+		output=$(BUILD_x86)/$$(basename $$file .asm); \
+		$(FASM) $$file $$output || exit 1; \
+	done
+	@echo "x86 build done."
+
+x86_64:
+	@echo "Building x86_64..."
+	@mkdir -p $(BUILD_x86_64)
+	@for file in $(SRC_x86_64)/*.asm; do \
+		output=$(BUILD_x86_64)/$$(basename $$file .asm); \
+		$(FASM) $$file $$output || exit 1; \
+	done
+	@echo "x86_64 build done."
+
+arm32:
+	@echo "Building arm32..."
+	@mkdir -p $(BUILD_arm32)
+	@for file in $(SRC_arm32)/*.asm; do \
+		output=$(BUILD_arm32)/$$(basename $$file .asm); \
+		$(FASM) $$file $$output || exit 1; \
+	done
+	@echo "arm32 build done."
+
+arm64:
+	@echo "Building arm64..."
+	@mkdir -p $(BUILD_arm64)
+	@for file in $(SRC_arm64)/*.asm; do \
+		output=$(BUILD_arm64)/$$(basename $$file .asm); \
+		$(FASM) $$file $$output || exit 1; \
+	done
+	@echo "arm64 build done."
 
 clean:
-	rm -rf $(BUILD_DIR)
+	@echo "Cleaning build directories..."
+	@rm -rf $(BUILD_x86) $(BUILD_x86_64) $(BUILD_arm32) $(BUILD_arm64)
+	@echo "Clean done."

@@ -1,4 +1,4 @@
-macro clr reg { xor reg,reg } ; clears the specified register using xor
+macro clr reg { xor reg, reg } ; clears the specified register using xor
 
 macro exit value {
     mov rax, 60 ; sets syscall number for exit
@@ -48,16 +48,16 @@ macro printnum value {
     mov rcx, 10 ; sets divisor to 10 (decimal base)
     mov rbx, rax ; copies value to rbx for division
 
-.convert: ; .convert label start
-    dec rdi ; moves pointer one byte left
-    xor rdx, rdx ; clears rdx (high part of dividend)
-    div rcx ; divides rax by rcx, quotient in rax, remainder in rdx
-    add dl, '0' ; converts remainder to ASCII digit
-    mov [rdi], dl ; stores digit at current rdi
-    test rax, rax ; tests if quotient is zero
-    jnz .convert ; loops if quotient not zero
+    .convert: ; .convert label start
+        dec rdi ; moves pointer one byte left
+        xor rdx, rdx ; clears rdx (high part of dividend)
+        div rcx ; divides rax by rcx, quotient in rax, remainder in rdx
+        add dl, '0' ; converts remainder to ASCII digit
+        mov [rdi], dl ; stores digit at current rdi
+        test rax, rax ; tests if quotient is zero
+        jnz .convert ; loops if quotient not zero
 
-    mov rsi, rdi
+    mov rsi, rdi ; sets rsi to current string start
     mov rax, 1 ; sets syscall number for write
     mov rdi, 1 ; sets file descriptor to stdout (1)
     mov rdx, buffer ; buffer start address
