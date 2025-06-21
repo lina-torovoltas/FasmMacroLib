@@ -6,7 +6,8 @@
 ![License](https://img.shields.io/github/license/lina-torovoltas/FasmMacrosLib)
 ![GitHub release](https://img.shields.io/github/v/release/lina-torovoltas/FasmMacrosLib)
 ![Downloads](https://img.shields.io/github/downloads/lina-torovoltas/FasmMacrosLib/total)</br>
-FasmMacroLib is a macro library designed to simplify FASM programming upon Linux across x86, x86_64, ARM, and ARM64 architectures.
+FasmMacroLib is a macro library designed to simplify FASM programming upon Linux.</br>
+It supports x86, x86_64, ARM, and ARM64 architectures.
 
 ## Installation
 
