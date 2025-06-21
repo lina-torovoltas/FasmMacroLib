@@ -1,7 +1,7 @@
 ; This code works only on 32-bit Linux!!!
 
 format ELF executable 3
-include '../macrolib.inc'
+include '../../macrolib/macrolib_x86.inc'
 entry start
 
 

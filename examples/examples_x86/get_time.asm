@@ -1,7 +1,7 @@
 ; This code works only on 64-bit Linux!!!
 
 format ELF executable 3
-include '../macrolib.inc'
+include '../../macrolib/macrolib_x86.inc'
 entry start
 
 
@@ -9,10 +9,7 @@ entry start
 segment readable executable
 
 start:
-    printnum 1234
-    printnum 4294967295
-    printnum 0
-    printnum 244939252
+    time
 
     mov eax, 1
     xor ebx, ebx

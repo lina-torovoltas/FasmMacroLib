@@ -1,7 +1,7 @@
 ; This code works only on 64-bit Linux!!!
 
 format ELF64 executable 3
-include '../macrolib.inc'
+include '../../macrolib/macrolib_x64.inc'
 entry start
 
 
@@ -9,7 +9,7 @@ entry start
 segment readable executable
 
 start:
-    mkdir name, 777o
+    print msg, msg_len
 
     mov rax, 60
     xor rdi, rdi
@@ -19,4 +19,5 @@ start:
 
 segment readable writeable
 
-name db "test", 0
+msg db 'Test output string', 10
+msg_len = $ - msg

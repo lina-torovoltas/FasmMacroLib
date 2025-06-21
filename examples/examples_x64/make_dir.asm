@@ -1,7 +1,7 @@
 ; This code works only on 64-bit Linux!!!
 
 format ELF64 executable 3
-include '../macrolib.inc'
+include '../../macrolib/macrolib_x64.inc'
 entry start
 
 
@@ -9,8 +9,14 @@ entry start
 segment readable executable
 
 start:
-    time
+    mkdir name, 777o
 
     mov rax, 60
     xor rdi, rdi
     syscall
+
+
+
+segment readable writeable
+
+name db "test", 0
