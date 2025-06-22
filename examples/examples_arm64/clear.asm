@@ -11,6 +11,6 @@ segment readable executable
 align 4
 
 start:
+    clr x8, x0
     mov x8, #93
-    clr x0
     svc 0

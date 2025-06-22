@@ -9,6 +9,6 @@ entry start
 segment readable executable
 
 start:
+    clr rax, rdi
     mov rax, 60
-    clr rdi
     syscall

@@ -1,4 +1,10 @@
-macro clr reg { xor reg, reg } ; clears the specified register using xor
+; Auxiliary Macros 
+
+macro clr [reg] { xor reg, reg } ; clears the specified registers using xor
+
+macro push [reg] { push reg } ; saves multiple registers onto the stack
+
+macro pop [reg] { pop reg } ; restores multiple registers from the stack
 
 macro exit value {
     mov eax, 1 ; sets syscall number for exit
@@ -6,36 +12,74 @@ macro exit value {
     int 0x80 ; performs the syscall
 }
 
+
+
+; Directory Management Macros
+
 macro mkdir dir_name, permissions {
-    push ebx ; saves ebx register
-    push ecx ; saves ecx register
+    push ebx, ecx ; saves ebx and ecx registers
 
     mov eax, 39 ; sets syscall number for mkdir
     mov ebx, dir_name ; sets path to directory
     mov ecx, permissions ; sets permissions
     int 0x80 ; performs the syscall
 
-    pop ecx ; restores ecx register
-    pop ebx ; restores ebx register
+    pop ecx, ebx ; restores ecx and ebx registers
 }
 
-macro time {
+macro rmdir dir_name {
     push ebx ; saves ebx register
 
-    mov eax, 13 ; sets syscall number for time
-    xor ebx, ebx ; sets argument to NULL (store time in eax)
+    mov eax, 40 ; sets syscall number for rmdir
+    mov ebx, dir_name ; sets path to directory
     int 0x80 ; performs the syscall
 
     pop ebx ; restores ebx register
+}
 
+
+
+; Console Output Macros
+
+macro print str, str_len {
+    push ebx, ecx, edx ; saves ebx, ecx and edx registers
+
+    mov eax, 4 ; sets syscall number for write
+    mov ebx, 1 ; sets file descriptor to stdout (1)
+    mov ecx, str ; sets pointer to string to write
+    mov edx, str_len ; sets length of string
+    int 0x80 ; performs the syscall
+
+    pop edx, ecx, ebx ; restores edx, ecx and ebx registers
+}
+
+macro printtim times, str, str_len {
+    push esi, edi, ecx, ebx, edx ; saves esi, edi, ecx, ebx and edx registers
+
+    local .loop ; declares local label .loop
+
+    xor esi, esi ; clears esi (counter)
+    mov edi, times ; moves times to edi (loop counter)
+
+    .loop: ; .loop label start
+        mov eax, 4 ; sets syscall number for write
+        mov ebx, 1 ; sets file descriptor to stdout (1)
+        mov ecx, str ; sets pointer to string to write
+        mov edx, str_len ; sets length of string
+        int 0x80 ; performs the syscall
+
+        add esi, eax ; adds number of bytes written to esi
+
+        dec edi ; decrements edi
+        jnz .loop ; jumps to .loop if edi not zero
+
+    mov eax, esi ; moves total bytes written from esi to eax
+
+    pop edx, ebx, ecx, edi, esi ; restores edx, ebx, ecx, edi and esi registers
 }
 
 macro printnum value {
-    push edi ; saves edi register
-    push ecx ; saves ecx register
-    push ebx ; saves ebx register
-    push edx ; saves edx register
-    push esi ; saves esi register
+    push edi, ecx, ebx, edx, esi ; saves edi, ecx, ebx, edx and esi registers
 
     local .convert ; declares local label .convert
 
@@ -75,70 +119,22 @@ macro printnum value {
 
     add eax, esi ; adds bytes written (number + newline)
 
-    pop esi ; restores esi register
-    pop edx ; restores edx register
-    pop ebx ; restores ebx register
-    pop ecx ; restores ecx register
-    pop edi ; restores edi register
+    pop esi, edx, ebx, ecx, edi ; restores esi, edx, ebx, ecx and edi registers
 }
 
-macro printtim times, str, str_len {
-    push esi ; saves esi register
-    push edi ; saves edi register
-    push ecx ; saves ecx register
-    push ebx ; saves ebx register
-    push edx ; saves edx register
 
-    local .loop ; declares local label .loop
 
-    xor esi, esi ; clears esi (counter)
-    mov edi, times ; moves times to edi (loop counter)
+; Misc Macros
 
-    .loop: ; .loop label start
-        mov eax, 4 ; sets syscall number for write
-        mov ebx, 1 ; sets file descriptor to stdout (1)
-        mov ecx, str ; sets pointer to string to write
-        mov edx, str_len ; sets length of string
-        int 0x80 ; performs the syscall
-
-        add esi, eax ; adds number of bytes written to esi
-
-        dec edi ; decrements edi
-        jnz .loop ; jumps to .loop if edi not zero
-
-    mov eax, esi ; moves total bytes written from esi to eax
-
-    pop edx ; restores edx register
-    pop ebx ; restores ebx register
-    pop ecx ; restores ecx register
-    pop edi ; restores edi register
-    pop esi ; restores esi register
-}
-
-macro print str, str_len {
-    push ebx ; saves ebx register
-    push ecx ; saves ecx register
-    push edx ; saves edx register
-
-    mov eax, 4 ; sets syscall number for write
-    mov ebx, 1 ; sets file descriptor to stdout (1)
-    mov ecx, str ; sets pointer to string to write
-    mov edx, str_len ; sets length of string
-    int 0x80 ; performs the syscall
-
-    pop edx ; restores edx register
-    pop ecx ; restores ecx register
-    pop ebx ; restores ebx register
-}
-
-macro rmdir dir_name {
+macro time {
     push ebx ; saves ebx register
 
-    mov eax, 40 ; sets syscall number for rmdir
-    mov ebx, dir_name ; sets path to directory
+    mov eax, 13 ; sets syscall number for time
+    xor ebx, ebx ; sets argument to NULL (store time in eax)
     int 0x80 ; performs the syscall
 
     pop ebx ; restores ebx register
+
 }
 
 macro run command {
@@ -156,10 +152,9 @@ macro run command {
     .argv dd .path, .arg2str, .arg3str, 0 ; defines argv array with pointers to path, arg2str, arg3str, and NULL terminator
 }
 
-macro push [arg] { push arg } ; saves multiple registers onto the stack
 
-macro pop [arg] { pop arg } ; restores multiple registers from the stack
 
+; Data Section
 
 newline db 10
 buffer rb 32

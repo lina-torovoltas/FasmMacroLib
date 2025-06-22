@@ -9,6 +9,6 @@ entry start
 segment readable executable
 
 start:
+    clr eax, ebx
     mov eax, 1
-    clr ebx
     int 0x80

@@ -1,4 +1,10 @@
-macro clr reg { xor reg, reg } ; clears the specified register using xor
+; Auxiliary Macros 
+
+macro clr [reg] { xor reg, reg } ; clears the specified registers using xor
+
+macro push [reg] { push reg } ; saves multiple registers onto the stack
+
+macro pop [reg] { pop reg } ; restores multiple registers from the stack
 
 macro exit value {
     mov rax, 60 ; sets syscall number for exit
@@ -6,37 +12,74 @@ macro exit value {
     syscall ; performs the syscall
 }
 
+
+
+; Directory Management Macros
+
 macro mkdir dir_name, permissions {
-    push rdi ; saves rdi register
-    push rsi ; saves rsi register
+    push rdi, rsi ; saves rdi and rsi registers
 
     mov rax, 83 ; sets syscall number for mkdir
     mov rdi, dir_name ; sets path to directory
     mov rsi, permissions ; sets permissions
     syscall ; performs the syscall
 
-    pop rsi ; restores rsi register
-    pop rdi ; restores rdi register
+    pop rsi, rdi ; restores rsi and rdi registers
 }
 
-macro time {
+macro rmdir dir_name {
     push rdi ; saves rdi register
 
-    mov rax, 201 ; sets syscall number for time
-    xor rdi, rdi ; sets argument to NULL (store time in rax)
+    mov rax, 84 ; sets syscall number for rmdir
+    mov rdi, dir_name ; sets path to directory
     syscall ; performs the syscall
 
     pop rdi ; restores rdi register
+}
 
+
+
+; Console Output Macros
+
+macro print str, str_len {
+    push rdi, rsi, rdx ; saves rdi, rsi and rdx registers
+
+    mov rax, 1 ; sets syscall number for write
+    mov rdi, 1 ; sets file descriptor to stdout (1)
+    mov rsi, str ; sets pointer to string to write
+    mov rdx, str_len ; sets length of string
+    syscall ; performs the syscall
+
+    pop rdx, rsi, rdi ; restores rdx, rsi and rdi registers
+}
+
+macro printtim times, str, str_len {
+    push r8, rbx, rdi, rsi, rdx ; saves r8, rbx, rdi, rsi and rdx registers
+
+    local .loop ; declares local label .loop
+
+    xor r8, r8 ; clears r8 (counter)
+    mov rbx, times ; moves times to rbx (loop counter)
+
+    .loop: ; .loop label start
+        mov rax, 1 ; sets syscall number for write
+        mov rdi, 1 ; sets file descriptor to stdout (1)
+        mov rsi, str ; sets pointer to string to write
+        mov rdx, str_len ; sets length of string
+        syscall ; performs the syscall
+
+        add r8, rax ; adds number of bytes written to r8
+
+        dec rbx ; decrements rbx
+        jnz .loop ; jumps to .loop if rbx not zero
+
+    mov rax, r8 ; moves total bytes written from r8 to rax
+
+    pop rdx, rsi, rdi, rbx, r8 ; restores rdx, rsi, rdi, rbx, and r8 registers
 }
 
 macro printnum value {
-    push rdi ; saves rdi register
-    push rcx ; saves rcx register
-    push rbx ; saves rbx register
-    push rdx ; saves rdx register
-    push rsi ; saves rsi register
-    push r8 ; saves r8 register
+    push rdi, rcx, rbx, rdx, rsi, r8 ; saves rdi, rcx, rbx, rdx, rsi and r8 registers
 
     local .convert ; declares local label .convert
 
@@ -76,71 +119,22 @@ macro printnum value {
 
     add rax, r8 ; adds bytes written (number + newline)
 
-    pop r8 ; restores r8 register
-    pop rsi ; restores rsi register
-    pop rdx ; restores rdx register
-    pop rbx ; restores rbx register
-    pop rcx ; restores rcx register
-    pop rdi ; restores rdi register
+    pop r8, rsi, rdx, rbx, rcx, rdi ; restores r8, rsi, rdx, rbx, rcx and rdi registers
 }
 
-macro printtim times, str, str_len {
-    push r8 ; saves r8 register
-    push rbx ; saves rbx register
-    push rdi ; saves rdi register
-    push rsi ; saves rsi register
-    push rdx ; saves rdx register
 
-    local .loop ; declares local label .loop
 
-    xor r8, r8 ; clears r8 (counter)
-    mov rbx, times ; moves times to rbx (loop counter)
+; Misc Macros
 
-    .loop: ; .loop label start
-        mov rax, 1 ; sets syscall number for write
-        mov rdi, 1 ; sets file descriptor to stdout (1)
-        mov rsi, str ; sets pointer to string to write
-        mov rdx, str_len ; sets length of string
-        syscall ; performs the syscall
-
-        add r8, rax ; adds number of bytes written to r8
-
-        dec rbx ; decrements rbx
-        jnz .loop ; jumps to .loop if rbx not zero
-
-    mov rax, r8 ; moves total bytes written from r8 to rax
-
-    pop rdx ; restores rdx register
-    pop rsi ; restores rsi register
-    pop rdi ; restores rdi register
-    pop rbx ; restores rbx register
-    pop r8 ; restores r8 register
-}
-
-macro print str, str_len {
-    push rdi ; saves rdi register
-    push rsi ; saves rsi register
-    push rdx ; saves rdx register
-
-    mov rax, 1 ; sets syscall number for write
-    mov rdi, 1 ; sets file descriptor to stdout (1)
-    mov rsi, str ; sets pointer to string to write
-    mov rdx, str_len ; sets length of string
-    syscall ; performs the syscall
-
-    pop rdx ; restores rdx register
-    pop rsi ; restores rsi register
-    pop rdi ; restores rdi register
-}
-
-macro rmdir dir_name {
+macro time {
     push rdi ; saves rdi register
 
-    mov rax, 84 ; sets syscall number for rmdir
-    mov rdi, dir_name ; sets path to directory
+    mov rax, 201 ; sets syscall number for time
+    xor rdi, rdi ; sets argument to NULL (store time in rax)
     syscall ; performs the syscall
 
     pop rdi ; restores rdi register
+
 }
 
 macro run command {
@@ -158,10 +152,9 @@ macro run command {
     .argv dq .path, .arg2str, .arg3str, 0 ; defines argv array with pointers to path, arg2str, arg3str, and NULL terminator
 }
 
-macro push [arg] { push arg } ; saves multiple registers onto the stack
 
-macro pop [arg] { pop arg } ; restores multiple registers from the stack
 
+; Data Section
 
 newline db 10
 buffer rb 32
