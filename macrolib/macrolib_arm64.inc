@@ -2,9 +2,9 @@
 
 macro clr [reg] { mov reg, #0 } ; clears the specified registers using mov
 
-macro push [reg] { str reg, [sp, -16] } ; saves multiple registers onto the stack
+macro push [reg] { str reg, [sp, #-8]! } ; saves multiple registers onto the stack
 
-macro pop [reg] { ldr reg, [sp, -16] } ; restores multiple registers from the stack
+macro pop [reg] { ldr reg, [sp], #8 } ; restores multiple registers from the stack
 
 macro exit value {
     mov x8, #93 ; sets syscall number for exit
