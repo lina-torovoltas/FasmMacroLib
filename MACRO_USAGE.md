@@ -5,7 +5,7 @@ The specific register used depends on the target architecture:
 
 - x86: `eax`  
 - x86_64: `rax`  
-- ARM: `r0`  
+- ARM32: `r0`  
 - ARM64: `x0`
 
 Also:  
@@ -216,7 +216,7 @@ printnum number
 
 **Note:**
 
-Not available in the library for arm and arm64.
+Not available in the library for ARM32 and ARM64.
 
 
 **Arguments:**</br>
@@ -243,7 +243,7 @@ time
 
 **Note:**
 
-Not available in the library for arm and arm64.
+Not available in the library for ARM32 and ARM64.
 
 
 
@@ -258,7 +258,7 @@ run command
 
 **Note:**
 
-Not available in the library for arm and arm64.
+Not available in the library for ARM32 and ARM64.
 
 
 **Arguments:**</br>

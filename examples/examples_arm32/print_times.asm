@@ -1,8 +1,8 @@
-; This code works only on arm64 Linux!!!
+; This code works only on arm32 Linux!!!
 
-format ELF64 executable 3
-processor cpu64_v8
-include '../../macrolib/macrolib_arm64.inc'
+format ELF executable 3
+processor cpu32_v1 +cpu32_t2
+include '../../macrolib/macrolib_arm32.inc'
 entry start
 
 
@@ -14,8 +14,8 @@ start:
     printtim 2, msg1, msg1_len
     printtim 3, msg2, msg2_len
 
-    mov x8, #93
-    mov x0, #0
+    mov r7, #1
+    mov r0, #0
     svc 0
 
 

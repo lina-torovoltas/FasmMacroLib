@@ -1,4 +1,4 @@
-; Auxiliary Macros 
+; Auxiliary Macros
 
 macro clr [reg] { xor reg, reg } ; clears the specified registers using xor
 
