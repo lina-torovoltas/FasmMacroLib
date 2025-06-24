@@ -3,12 +3,14 @@
 Some macros return data in a register.</br>
 The specific register used depends on the target architecture:
 
-- x86: `eax`  
+- x16:    `ax`
+- x86:    `eax`  
 - x86_64: `rax`  
-- ARM32: `r0`  
-- ARM64: `x0`
+- ARM32:  `r0`  
+- ARM64:  `x0`
 
 Also:  
+- For 16-bit targets, only 16-bit unsigned numbers are supported.
 - For 32-bit targets, only 32-bit unsigned numbers are supported.
 - For 64-bit targets, 64-bit unsigned numbers are supported.
 
@@ -122,7 +124,7 @@ mkdir dir_name, permissions
 
 **Arguments:**</br>
 `dir_name` — name of the directory to create, given as a string literal or a pointer to a string.</br>
-`permissions` — access mode in octal format, given as a number or a pointer to a variable containing the value.
+`permissions` — access mode in octal format, given as a number or a pointer to a variable containing the value. (not required for x16)
 
 
 **Usage example:**
@@ -169,7 +171,7 @@ print str, str_len
 
 **Arguments:**  
 `str` — pointer to the string or string literal to print.</br>
-`str_len` — length of the string in bytes, given as a number or pointer.
+`str_len` — length of the string in bytes, given as a number or pointer. (not required for x16)
 
 
 **Usage example:**
@@ -193,7 +195,7 @@ printtim times, str, str_len
 **Arguments:**</br>
 `times` — number of times to print the string, given as a number or pointer.</br>
 `str` — pointer to the string or string literal to print.</br>
-`str_len` — length of the string in bytes, given as a number or pointer.
+`str_len` — length of the string in bytes, given as a number or pointer. (not required for x16)
 
 
 **Usage example:**
@@ -216,7 +218,7 @@ printnum number
 
 **Note:**
 
-Not available in the library for ARM32 and ARM64.
+Not available in the library for x16, ARM32 and ARM64.
 
 
 **Arguments:**</br>
@@ -243,7 +245,7 @@ time
 
 **Note:**
 
-Not available in the library for ARM32 and ARM64.
+Not available in the library for x16, ARM32 and ARM64.
 
 
 
@@ -258,7 +260,7 @@ run command
 
 **Note:**
 
-Not available in the library for ARM32 and ARM64.
+Not available in the library for x16, ARM32 and ARM64.
 
 
 **Arguments:**</br>
