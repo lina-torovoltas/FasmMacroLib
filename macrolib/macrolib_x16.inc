@@ -6,6 +6,17 @@ macro push [reg] { push reg } ; saves multiple registers onto the stack
 
 macro pop [reg] { pop reg } ; restores multiple registers from the stack
 
+macro EXE {
+    format MZ
+    push cs
+    pop ds
+}
+
+macro COM {
+    org 100h
+    use16
+}
+
 macro exit code {
     mov ah, 4Ch
     mov al, code
