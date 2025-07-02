@@ -1,15 +1,17 @@
 ; This code works only on 16-bit DOS!!!
 
 include '../../macrolib/macrolib_x16.inc'
-EXE
+format MZ
+org 100h
 
 
 
-printtim 2, msg1
-printtim 3, msg2
+start:
+    printtim 2, msg1
+    printtim 3, msg2
 
-mov ah, 4Ch
-int 21h
+    mov ah, 4Ch
+    int 21h
 
 
 

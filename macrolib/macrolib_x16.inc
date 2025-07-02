@@ -6,17 +6,6 @@ macro push [reg] { push reg } ; saves multiple registers onto the stack
 
 macro pop [reg] { pop reg } ; restores multiple registers from the stack
 
-macro EXE {
-    format MZ
-    push cs
-    pop ds
-}
-
-macro COM {
-    org 100h
-    use16
-}
-
 macro exit code {
     mov ah, 4Ch
     mov al, code
@@ -76,4 +65,38 @@ macro printtim times, str {
     loop .loop
 
     pop cx, dx
+}
+
+macro printnum value {
+    local .buf, .print_loop, .print_end, .convert
+
+    .buf db 6 dup(0)
+
+    mov ax, value
+    mov si, .buf + 5
+    mov cx, 0
+
+  .convert:
+    xor dx, dx
+    mov bx, 10
+    div bx
+    add dl, '0'
+    dec si
+    mov [si], dl
+    inc cx
+    test ax, ax
+    jnz .convert
+
+  .print_loop:
+    mov dl, [si]
+    mov ah, 02h
+    int 21h
+    inc si
+    loop .print_loop
+
+    mov dl, 13
+    mov ah, 02h
+    int 21h
+    mov dl, 10
+    int 21h
 }

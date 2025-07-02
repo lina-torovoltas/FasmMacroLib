@@ -1,15 +1,12 @@
-; This code works only on 16-bit DOS!!!
+format MZ
+org 100h
 
-include '../../macrolib/macrolib_x16.inc'
-EXE
+start:
+    mov ah, 39h         ; функция создания каталога
+    mov dx, name        ; путь к папке
+    int 21h             ; вызов DOS
 
+    mov ah, 4Ch
+    int 21h
 
-
-mkdir name
-
-mov ah, 4Ch
-int 21h
-
-
-
-name db 'test',0 
+name db 'test', 0

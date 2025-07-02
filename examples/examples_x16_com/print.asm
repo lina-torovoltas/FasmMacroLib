@@ -1,13 +1,16 @@
 ; This code works only on 16-bit DOS!!!
 
 include '../../macrolib/macrolib_x16.inc'
-COM
+org 100h
+use16
 
 
-print msg
 
-mov ah, 4Ch
-int 21h
+start:
+    print msg
+
+    mov ah, 4Ch
+    int 21h
 
 
 

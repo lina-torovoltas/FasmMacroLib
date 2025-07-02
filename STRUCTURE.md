@@ -15,10 +15,20 @@
 │   ├── macrolib_arm.inc
 │   └── macrolib_arm64.inc
 └── examples/
-    ├── examples_x16/
+    ├── examples_x16_com/
     │   ├── clear.asm
     │   ├── exit.asm
     │   ├── make_dir.asm
+    │   ├── print_number.asm
+    │   ├── print_times.asm
+    │   ├── print.asm
+    │   ├── remove_dir.asm
+    │   └── stackops.asm
+    ├── examples_x16_exe/
+    │   ├── clear.asm
+    │   ├── exit.asm
+    │   ├── make_dir.asm
+    │   ├── print_number.asm
     │   ├── print_times.asm
     │   ├── print.asm
     │   ├── remove_dir.asm

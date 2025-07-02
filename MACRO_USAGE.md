@@ -12,7 +12,7 @@ The specific register used depends on the target architecture:
 Also:  
 - For 16-bit targets, only 16-bit unsigned numbers are supported.
 - For 32-bit targets, only 32-bit unsigned numbers are supported.
-- For 64-bit targets, 64-bit unsigned numbers are supported.
+- For 64-bit targets, only 64-bit unsigned numbers are supported.
 
 *Unsigned numbers are non-negative integers (0 and above).*
 
@@ -218,7 +218,7 @@ printnum number
 
 **Note:**
 
-Not available in the library for x16, ARM32 and ARM64.
+Not available in the library for ARM32 and ARM64.
 
 
 **Arguments:**</br>

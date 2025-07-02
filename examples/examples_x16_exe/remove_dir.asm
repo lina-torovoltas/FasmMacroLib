@@ -1,14 +1,16 @@
 ; This code works only on 16-bit DOS!!!
 
 include '../../macrolib/macrolib_x16.inc'
-EXE
+format MZ
+org 100h
 
 
 
-rmdir name
+start:
+    rmdir name
 
-mov ah, 4Ch
-int 21h
+    mov ah, 4Ch
+    int 21h
 
 
 

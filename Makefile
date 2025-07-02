@@ -1,11 +1,13 @@
-SRC_x16 = examples/examples_x16
+SRC_x16_com = examples/examples_x16_com
+SRC_x16_exe = examples/examples_x16_exe
 SRC_x86 = examples/examples_x86
 SRC_x64 = examples/examples_x64
 SRC_arm32 = examples/examples_arm32
 SRC_arm64 = examples/examples_arm64
 
 BUILD_DIR = build
-BUILD_x16 = $(BUILD_DIR)/examples_x16
+BUILD_x16_com = $(BUILD_DIR)/examples_x16_com
+BUILD_x16_exe = $(BUILD_DIR)/examples_x16_exe
 BUILD_x86 = $(BUILD_DIR)/examples_x86
 BUILD_x64 = $(BUILD_DIR)/examples_x64
 BUILD_arm32 = $(BUILD_DIR)/examples_arm32
@@ -14,25 +16,36 @@ BUILD_arm64 = $(BUILD_DIR)/examples_arm64
 FASM = fasm
 FASMA = fasmarm
 
-.PHONY: x16 x86 x64 arm32 arm64 all clean check_tools check_dirs
+all: x16_com x16_exe x86 x64 arm32 arm64
+.PHONY: x16_com x16_exe x86 x64 arm32 arm64 all clean check_tools check_dirs
 
 check_tools:
 	@command -v $(FASM) >/dev/null 2>&1 || { echo "Error: $(FASM) is not installed or not in PATH"; exit 1; }
 	@command -v $(FASMA) >/dev/null 2>&1 || { echo "Error: $(FASMA) is not installed or not in PATH"; exit 1; }
 
 check_dirs:
-	@for dir in $(SRC_x16) $(SRC_x86) $(SRC_x64) $(SRC_arm32) $(SRC_arm64); do \
+	@for dir in $(SRC_x16_com) $(SRC_x16_exe) $(SRC_x86) $(SRC_x64) $(SRC_arm32) $(SRC_arm64); do \
 		if [ ! -d $$dir ]; then \
 			echo "Error: Source directory '$$dir' does not exist"; exit 1; \
 		fi \
 	done
 
-x16: check_tools check_dirs
-	@mkdir -p $(BUILD_x16)
-	@for file in $(SRC_x16)/*.asm; do \
-		output=$(BUILD_x16)/$$(basename $$file .asm); \
+x16_com: check_tools check_dirs
+	@mkdir -p $(BUILD_x16_com)
+	@for file in $(SRC_x16_com)/*.asm; do \
+		base=$$(basename $$file .asm); \
+		output="$(BUILD_x16_com)/$$base.com"; \
 		echo "Building $$file -> $$output"; \
-		$(FASM) $$file $$output || exit 1; \
+		$(FASM) "$$file" "$$output" || exit 1; \
+	done
+
+x16_exe: check_tools check_dirs
+	@mkdir -p $(BUILD_x16_exe)
+	@for file in $(SRC_x16_exe)/*.asm; do \
+		base=$$(basename $$file .asm); \
+		output="$(BUILD_x16_exe)/$$base.exe"; \
+		echo "Building $$file -> $$output"; \
+		$(FASM) "$$file" "$$output" || exit 1; \
 	done
 
 x86: check_tools check_dirs
@@ -66,8 +79,6 @@ arm64: check_tools check_dirs
 		echo "Building $$file -> $$output"; \
 		$(FASMA) $$file $$output || exit 1; \
 	done
-
-all: x16 x86 x64 arm32 arm64
 
 clean:
 	@rm -rf $(BUILD_DIR)

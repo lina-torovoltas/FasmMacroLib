@@ -1,7 +1,8 @@
 ; This code works only on 16-bit DOS!!!
 
 include '../../macrolib/macrolib_x16.inc'
-EXE
+format MZ
+org 100h
 
 
 
@@ -16,10 +17,11 @@ macro print msg {
 }
 
 
-print msg
+start:
+    print msg
 
-mov ah, 4Ch
-int 21h
+    mov ah, 4Ch
+    int 21h
 
 
 

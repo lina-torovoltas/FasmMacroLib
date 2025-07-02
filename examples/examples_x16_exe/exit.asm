@@ -1,7 +1,10 @@
 ; This code works only on 16-bit DOS!!!
 
 include '../../macrolib/macrolib_x16.inc'
-EXE
+format MZ
+org 100h
 
 
-exit 0
+
+start:
+    exit 0

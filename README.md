@@ -1,6 +1,6 @@
 ## FasmMacroLib
 
-![Language](https://img.shields.io/badge/language%20-%20Assembler-red)
+![Language](https://img.shields.io/badge/language%20-%20Assembly-red)
 ![CPU](https://img.shields.io/badge/CPU-x16%2C%20x86%2C%20x64%2C%20ARM32%2C%20ARM64-orange)
 ![OS](https://img.shields.io/badge/OS-Linux%2C%20DOS-0078D4)
 ![License](https://img.shields.io/github/license/lina-torovoltas/FasmMacrosLib)
