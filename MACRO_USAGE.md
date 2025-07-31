@@ -35,6 +35,7 @@ clr reg1, reg2
 **Usage example:**
 
 ```asm
+clr ax, bx      ; sets ax and bx to 0
 clr eax, ebx    ; sets eax and ebx to 0
 clr rax, rdi    ; sets rax and rdi to 0
 clr r7, r0      ; sets r7 and r0 to 0
@@ -60,11 +61,11 @@ pop reg3, reg2, reg1
 
 **Usage example:**
 
-For x86_64:
+For x16:
 ```
-push rax, rdi, rsi
+push ax, bx, cx
 ...
-pop rsi, rdi, rax
+pop cx, ax, bx
 ```
 
 For x86:
@@ -72,6 +73,13 @@ For x86:
 push eax, edi, esi
 ...
 pop esi, edi, eax
+```
+
+For x86_64:
+```
+push rax, rdi, rsi
+...
+pop rsi, rdi, rax
 ```
 
 For ARM:
@@ -171,7 +179,7 @@ print str, str_len
 
 **Arguments:**  
 `str` — pointer to the string or string literal to print.</br>
-`str_len` — length of the string in bytes, given as a number or pointer. (not required for x16)
+`str_len` — length of the string in bytes, given as a number or pointer (not required for DOS).
 
 
 **Usage example:**
@@ -218,7 +226,7 @@ printnum number
 
 **Note:**
 
-Not available in the library for ARM32 and ARM64.
+Not available in the library for Linux (ARM 32-bit and ARM 64-bit).
 
 
 **Arguments:**</br>
@@ -245,7 +253,7 @@ time
 
 **Note:**
 
-Not available in the library for x16, ARM32 and ARM64.
+Not available in the library for DOS, Linux (ARM 32-bit and ARM 64-bit), and BSD.
 
 
 
@@ -260,7 +268,7 @@ run command
 
 **Note:**
 
-Not available in the library for x16, ARM32 and ARM64.
+Not available in the library for DOS and Linux (ARM 32-bit and ARM 64-bit).
 
 
 **Arguments:**</br>
