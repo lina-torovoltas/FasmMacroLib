@@ -19,8 +19,8 @@ include 'linux_x64.inc'       ; for Linux x64
 include 'linux_arm32.inc'     ; for Linux arm32
 include 'linux_arm64.inc'     ; for Linux arm64
 include 'dos_x16.inc'         ; for DOS x16
-include 'freebsd_x86.inc'         ; for FreeBSD x86
-include 'freebsd_x64.inc'         ; for FreeBSD x64
+include 'freebsd_x86.inc'     ; for FreeBSD x86
+include 'freebsd_x64.inc'     ; for FreeBSD x64
 ```
 
 ## Dependencies
