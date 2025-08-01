@@ -54,6 +54,10 @@ push reg1, reg2, reg3
 pop reg3, reg2, reg1
 ```
 
+**Note:**
+
+Not available in the library for FreeBSD(32-bit).
+
 
 **Arguments:**</br>
 `regN` — actual registers to push or pop depending on the target architecture.
@@ -129,6 +133,10 @@ Returns an error code in the architecture-specific register.
 mkdir dir_name, permissions
 ```
 
+**Note:**
+
+Not available in the library for FreeBSD(32-bit).
+
 
 **Arguments:**</br>
 `dir_name` — name of the directory to create, given as a string literal or a pointer to a string.</br>
@@ -151,6 +159,10 @@ Returns an error code in the architecture-specific register.
 ```asm
 rmdir dir_name
 ```
+
+**Note:**
+
+Not available in the library for FreeBSD(32-bit).
 
 
 **Arguments:**</br>
@@ -253,7 +265,7 @@ time
 
 **Note:**
 
-Not available in the library for DOS, Linux (ARM 32-bit and ARM 64-bit), and BSD.
+Not available in the library for DOS, Linux (ARM 32-bit and ARM 64-bit) and FreeBSD(32-bit and 64-bit).
 
 
 
@@ -268,7 +280,7 @@ run command
 
 **Note:**
 
-Not available in the library for DOS and Linux (ARM 32-bit and ARM 64-bit).
+Not available in the library for DOS, Linux (ARM 32-bit and ARM 64-bit) and FreeBSD(32-bit).
 
 
 **Arguments:**</br>
