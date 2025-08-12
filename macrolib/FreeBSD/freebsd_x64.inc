@@ -14,6 +14,45 @@ macro exit value {
 
 
 
+; Convert Macros
+
+macro itoa num, buffer { ; rax -> count
+    push rcx, rdi, rdx, rbx, rsi
+
+    local .loop, .reverse
+
+    xor rcx, rcx
+    mov rdi, buffer
+    mov rsi, num
+
+    .loop:
+        xor rdx, rdx
+        mov rax, rsi
+        mov rbx, 10
+        div rbx
+        add dl, '0'           
+		push dx
+		inc rcx
+        mov rsi, rax
+        test rax, rax
+        jnz .loop
+
+    mov rdx, rcx
+
+    .reverse:
+        pop ax
+        stosb
+        loop .reverse
+
+    mov rax, rdx
+
+    mov byte [rdi], 0
+
+    pop rsi, rbx, rdx, rdi, rcx
+}
+
+
+
 ; Directory Management Macros
 
 macro mkdir dir_name, permissions {
@@ -42,18 +81,29 @@ macro rmdir dir_name {
 ; Console Output Macros
 
 macro print str, str_len {
-    push rdi, rsi, rdx ; saves rdi, rsi and rdx registers
-
-    mov rax, 4 ; sets syscall number for write
-    mov rdi, 1 ; sets file descriptor to stdout (1)
+    push rsi, rdx, rdi, rbx
+    
     mov rsi, str ; sets pointer to string to write
     mov rdx, str_len ; sets length of string
+    mov rax, 4 ; sets syscall number for write
+    mov rdi, 1 ; sets file descriptor to stdout (1)
     syscall ; performs the syscall
+    
+    xor rbx, rbx
+    mov rbx, rax
 
-    pop rdx, rsi, rdi ; restores rdx, rsi and rdi registers
+    mov rax, 4
+    mov rdi, 1
+    mov rdi, print_newline_char
+    mov rdx, 1
+    syscall
+
+    add rax, rbx
+
+    pop rbx, rdi, rdx, rdi
 }
 
-macro printtim times, str, str_len {
+macro printl times, str, str_len {
     push r8, rbx, rdi, rsi, rdx ; saves r8, rbx, rdi, rsi and rdx registers
 
     local .loop ; declares local label .loop
@@ -62,11 +112,19 @@ macro printtim times, str, str_len {
     mov rbx, times ; moves times to rbx (loop counter)
 
     .loop: ; .loop label start
-        mov rax, 4 ; sets syscall number for write
-        mov rdi, 1 ; sets file descriptor to stdout (1)
         mov rsi, str ; sets pointer to string to write
         mov rdx, str_len ; sets length of string
+        mov rax, 4 ; sets syscall number for write
+        mov rdi, 1 ; sets file descriptor to stdout (1)
         syscall ; performs the syscall
+
+        add r8, rax
+
+		mov rax, 4
+		mov rdi, 1
+		mov rsi, print_newline_char
+		mov rdx, 1
+		syscall
 
         add r8, rax ; adds number of bytes written to r8
 
@@ -76,50 +134,6 @@ macro printtim times, str, str_len {
     mov rax, r8 ; moves total bytes written from r8 to rax
 
     pop rdx, rsi, rdi, rbx, r8 ; restores rdx, rsi, rdi, rbx, and r8 registers
-}
-
-macro printnum value {
-    push rdi, rcx, rbx, rdx, rsi, r8 ; saves rdi, rcx, rbx, rdx, rsi and r8 registers
-
-    local .convert ; declares local label .convert
-
-    mov rax, value ; moves value to rax
-    mov rdi, buffer ; sets rdi to point to buffer start
-    add rdi, 31 ; moves rdi to end of buffer
-    mov byte [rdi], 0 ; writes null terminator at buffer end
-
-    mov rcx, 10 ; sets divisor to 10 (decimal base)
-    mov rbx, rax ; copies value to rbx for division
-
-    .convert: ; .convert label start
-        dec rdi ; moves pointer one byte left
-        xor rdx, rdx ; clears rdx (high part of dividend)
-        div rcx ; divides rax by rcx, quotient in rax, remainder in rdx
-        add dl, '0' ; converts remainder to ASCII digit
-        mov [rdi], dl ; stores digit at current rdi
-        test rax, rax ; tests if quotient is zero
-        jnz .convert ; loops if quotient not zero
-
-    mov rsi, rdi ; sets rsi to current string start
-    mov rax, 4 ; sets syscall number for write
-    mov rdi, 1 ; sets file descriptor to stdout (1)
-    mov rdx, buffer ; buffer start address
-    add rdx, 32 ; buffer end address
-    sub rdx, rsi ; calculates length of number string
-    syscall ; performs syscall
-
-    xor r8, r8 ; clears r8
-    mov r8, rax ; saves number of bytes written
-
-    mov rax, 4 ; sets syscall number for write
-    mov rdi, 1 ; sets file descriptor to stdout (1)
-    mov rsi, newline ; pointer to newline char
-    mov rdx, 1 ; length 1 byte
-    syscall ; performs the syscall
-
-    add rax, r8 ; adds bytes written (number + newline)
-
-    pop r8, rsi, rdx, rbx, rcx, rdi ; restores r8, rsi, rdx, rbx, rcx and rdi registers
 }
 
 
@@ -145,5 +159,4 @@ macro run command {
 
 ; Data Section
 
-newline db 10
-buffer rb 32
+print_newline_char db 10

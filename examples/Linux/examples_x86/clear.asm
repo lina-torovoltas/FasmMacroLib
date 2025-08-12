@@ -11,4 +11,4 @@ segment readable executable
 start:
     clr eax, ebx
     mov eax, 1
-    int 0x80
+    int 80h

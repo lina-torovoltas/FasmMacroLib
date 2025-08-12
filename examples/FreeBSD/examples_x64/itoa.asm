@@ -9,9 +9,17 @@ entry start
 segment readable executable
 
 start:
-    print msg, msg_len
+    itoa 0, buffer
+    print buffer, rax
 
-    mov rax, 1
+    mov rax, 244939252
+    itoa rax, buffer
+    print buffer, rax
+
+    itoa [number], buffer
+    print buffer, rax
+
+    mov rax, 60
     xor rdi, rdi
     syscall
 
@@ -19,5 +27,5 @@ start:
 
 segment readable writeable
 
-msg db 'Test output string'
-msg_len = $ - msg
+buffer rb 20
+number dq 18446744073709551615

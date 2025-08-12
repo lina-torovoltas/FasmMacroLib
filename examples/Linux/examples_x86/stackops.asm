@@ -15,7 +15,7 @@ macro print str, str_len {
     mov ebx, 1
     mov ecx, str
     mov edx, str_len
-    int 0x80
+    int 80h
 
     pop edx, ecx, ebx
 }
@@ -26,7 +26,7 @@ start:
 
     mov eax, 1
     xor ebx, ebx
-    int 0x80
+    int 80h
 
 
 

@@ -9,8 +9,15 @@ entry start
 segment readable executable
 
 start:
-    printtim 2, msg1, msg1_len
-    printtim 3, msg2, msg2_len
+    itoa 0, buffer
+    print buffer, rax
+
+    mov rax, 244939252
+    itoa rax, buffer
+    print buffer, rax
+
+    itoa [number], buffer
+    print buffer, rax
 
     mov rax, 60
     xor rdi, rdi
@@ -20,8 +27,5 @@ start:
 
 segment readable writeable
 
-msg1 db 'This message will be repeated two times', 10
-msg1_len = $ - msg1
-
-msg2 db 'This message will be repeated three times', 10
-msg2_len = $ - msg2
+buffer rb 20
+number dq 18446744073709551615

@@ -13,7 +13,7 @@ start:
 
     mov eax, 1
     xor ebx, ebx
-    int 0x80
+    int 80h
 
 
 

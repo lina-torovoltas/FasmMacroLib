@@ -9,7 +9,8 @@ entry start
 segment readable executable
 
 start:
-    print msg, msg_len
+    printl 2, msg1, msg1_len
+    printl 3, msg2, msg2_len
 
     mov rax, 60
     xor rdi, rdi
@@ -19,5 +20,8 @@ start:
 
 segment readable writeable
 
-msg db 'Test output string'
-msg_len = $ - msg
+msg1 db 'This message will be repeated two times'
+msg1_len = $ - msg1
+
+msg2 db 'This message will be repeated three times'
+msg2_len = $ - msg2
