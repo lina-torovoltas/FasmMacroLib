@@ -31,7 +31,7 @@ macro itoa number, buffer { ; string length -> rax
         mov rbx, 10 ; sets divisor to 10 (decimal base)
         div rbx ; divides combined value in rdx:rax by rbx, quotient stored in rax, remainder stored in rdx
         add dl, '0' ; converts remainder to ASCII digit
-        push dx ; pushes digit (in dl) to stack
+        push dx ; pushes digit to stack
         inc rcx ; increments loop counter
         mov rsi, rax ; updates number with quotient
         test rax, rax ; tests if quotient is zero
@@ -44,11 +44,11 @@ macro itoa number, buffer { ; string length -> rax
         stosb ; stores al at [rdi] and increments rdi
         loop .reverse ; loops rcx times to write digits in order
 
-    mov rax, rdx ; saves the string length in rax
+    mov rax, rdx ; moves string length to rax
 
     mov byte [rdi], 0 ; writes null terminator at end of string
 
-    pop rsi, rbx, rdx, rdi, rcx ; restores rsi, rbx, rdx, rdi and rcx
+    pop rbx, rdx, rsi, rdi, rcx ; restores rbx, rdx, rsi, rdi and rcx
 }
 
 
