@@ -47,7 +47,7 @@ macro itoa number, buffer { ; string length -> eax
 
 ; Console Output Macros
 
-macro print str, str_len {
+macro print str, str_len { ; total bytes written -> eax
     mov eax, 4 ; sets syscall number for write
     push str_len ; sets length of string
     push str ; sets pointer to string to write
@@ -63,7 +63,7 @@ macro print str, str_len {
     int 80h ; performs the syscal
 }
 
-macro printl times, str, str_len {
+macro printl times, str, str_len { ; total bytes written -> eax
     local .loop ; declares local label .loop
 
     mov edi, times ; moves times to edi (loop counter)
