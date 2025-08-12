@@ -13,4 +13,4 @@ start:
     mov eax, 1
     push ebx
     push eax
-    int 0x80
+    int 80h
