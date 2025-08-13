@@ -11,7 +11,7 @@ segment readable executable
 align 4
 
 macro print str, str_len {
-    push x8, x0, x1, x2
+    push x8, x1, x2
 
     mov x8, #64
     mov x0, #1
@@ -19,7 +19,7 @@ macro print str, str_len {
     mov x2, str_len
     svc 0
 
-    pop x2, x1, x0, x8
+    pop x2, x1, x8
 }
 
 

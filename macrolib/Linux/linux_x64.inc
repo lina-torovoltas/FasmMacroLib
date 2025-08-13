@@ -48,7 +48,7 @@ macro itoa number, buffer { ; string length -> rax
 
     mov byte [rdi], 0 ; writes null terminator at end of string
 
-    pop rbx, rdx, rsi, rdi, rcx ; restores rbx, rdx, rsi, rdi and rcx
+    pop rbx, rdx, rsi, rdi, rcx ; restores rbx, rdx, rsi, rdi and rcx registers
 }
 
 

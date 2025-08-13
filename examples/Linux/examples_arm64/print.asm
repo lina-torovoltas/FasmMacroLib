@@ -21,5 +21,5 @@ start:
 
 segment readable writeable
 
-msg db 'Test output string', 10
+msg db 'Test output string'
 msg_len = $ - msg
