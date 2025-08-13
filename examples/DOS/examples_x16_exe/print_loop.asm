@@ -1,14 +1,14 @@
 ; This code works only on 16-bit DOS!!!
 
 include '../../../macrolib/DOS/dos_x16.inc'
+format MZ
 org 100h
-use16
 
 
 
 start:
-    printtim 2, msg1
-    printtim 3, msg2
+    printl 2, msg1
+    printl 3, msg2
 
     mov ah, 4Ch
     int 21h

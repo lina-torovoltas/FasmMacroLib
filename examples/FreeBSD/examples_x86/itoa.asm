@@ -19,6 +19,11 @@ start:
     itoa [number], buffer 
     print buffer, eax
 
+    itoa 1234, buffer
+    mov ebp, eax ; When using printl with itoa, move the length of the string from register eax to register ebp
+    printl 2, buffer, ebp
+
+
     mov eax, 1
     push 0
     push eax
