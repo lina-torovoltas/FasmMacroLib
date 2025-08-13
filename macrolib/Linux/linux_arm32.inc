@@ -22,7 +22,7 @@ macro exit value {
 
 ; Directory Management Macros
 
-macro mkdir dir_name, permissions {
+macro mkdir dir_name, permissions { ; error code -> r0
     push r7, r1 ; saves r7 and r1 registers
 
     mov r7, #39 ; sets syscall number for mkdir
@@ -33,7 +33,7 @@ macro mkdir dir_name, permissions {
     pop r1, r7 ; restores r1 and r7 registers
 }
 
-macro rmdir dir_name {
+macro rmdir dir_name {  ; error code -> r0
     push r7 ; saves r7 register
 
     mov r7, #40 ; sets syscall number for rmdir
@@ -47,40 +47,65 @@ macro rmdir dir_name {
 
 ; Console Output Macros
 
-macro print str, str_len {
-    push r7, r1, r2 ; saves r7, r1 and r2 registers
+macro print str, str_len { ; total bytes written -> r0
+    push r1, r2, r3, r7 ; saves r1, r2, r3 and r7 registers
+    
+    mov r1, str ; sets pointer to string to write
+    mov r2, str_len ; sets length of string
+    mov r7, #4 ; sets syscall number for write
+    mov r0, #1 ; sets file descriptor to stdout (1) 
+    svc 0 ; performs the syscall
+
+    mov r3, #0 ; clears r3 (counter)
+    add r3, r3, r0 ; adds number of bytes written to r3
 
     mov r7, #4 ; sets syscall number for write
     mov r0, #1 ; sets file descriptor to stdout (1)
-    mov r1, str ; sets pointer to string to write
-    mov r2, str_len ; sets length of string
+    mov r1, print_newline_char ; pointer to newline char
+    mov r2, 1 ; length 1 byte
     svc 0 ; performs the syscall
 
-    pop r2, r1, r7 ; saves r2, r1 and r7 registers
+    add r0, r0, r3 ; adds number of bytes written to r0
+
+    pop r7, r3, r2, r1 ; restores r7, r3, r2 and r1 registers
 }
 
-macro printtim times, str, str_len {
-    push r4, r5, r7, r1, r2 ; saves r4, r5, r7, r1 and r2 registers
+macro printl times, str, str_len { ; total bytes written -> r0
+    push r3, r4, r1, r2, r7 ; saves r3, r4, r1, r2 and r7 registers
 
     local .loop ; declares local label .loop
 
-    mov r4, #0 ; clears r4 (counter)
-    mov r5, times ; moves times to r5 (loop counter)
+    mov r3, #0 ; clears r3 (counter)
+    mov r4, times ; moves times to r4 (loop counter)
 
     .loop: ; .loop label start
-        mov r7, #4 ; sets syscall number for write
-        mov r0, #1 ; sets file descriptor to stdout (1)
         mov r1, str ; sets pointer to string to write
         mov r2, str_len ; sets length of string
+        mov r7, #4 ; sets syscall number for write
+        mov r0, #1 ; sets file descriptor to stdout (1) 
         svc 0 ; performs the syscall
 
-        add r4, r4, r0 ; adds number of bytes written to r4
+        add r3, r3, r0 ; adds number of bytes written to r3
 
-        sub r5, r5, #1 ; decrements r5
-        cmp r5, #0 ; compare r5 with 0
-        bne .loop ; jumps to .loop if r5 not zero
+        mov r7, #4 ; sets syscall number for write
+        mov r0, #1 ; sets file descriptor to stdout (1)
+        mov r1, print_newline_char ; pointer to newline char
+        mov r2, 1 ; length 1 byte
+        svc 0 ; performs the syscall
 
-    mov r0, r4 ; moves total bytes written from r4 to r0
+        add r3, r3, r0 ; adds number of bytes written to r3
 
-    pop r2, r1, r7, r5, r4 ; restores r2, r1, r7, r5 and r4 register
+        sub r4, r4, #1 ; decrements r4
+        cmp r4, #0 ; compare r4 with 0
+        bne .loop ; jumps to .loop if r4 not zero
+
+    mov r0, r3 ; moves total bytes written from r3 to r0
+
+    pop r7, r2, r1, r4, r3 ; restores r7, r2, r1, r4 and r3 register
 }
+
+
+
+; Data Section
+
+print_newline_char db 10

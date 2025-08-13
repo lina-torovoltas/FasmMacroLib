@@ -24,6 +24,11 @@ start:
     ldr x0, number 
     itoa x0, buffer
     print buffer, x0
+    
+    mov x0, #1234
+    itoa x0, buffer
+    mov x5, x0 ; when using printl with itoa, move the length of the string from register x0 to register x5
+    printl 2, buffer, x5
 
     mov x8, #93
     mov x0, #0
