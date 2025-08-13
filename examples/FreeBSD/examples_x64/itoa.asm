@@ -21,9 +21,9 @@ start:
 
     itoa 1234, buffer
     mov r9, rax ; When using printl with itoa, move the length of the string from register rax to register r9
-    printl 2, buffer, r9
+    printl 2, buffer, 4
 
-    mov rax, 60
+    mov rax, 1
     xor rdi, rdi
     syscall
 

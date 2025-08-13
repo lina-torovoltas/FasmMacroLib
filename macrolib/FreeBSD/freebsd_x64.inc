@@ -94,7 +94,7 @@ macro print str, str_len { ; total bytes written -> rax
 
     mov rax, 4 ; sets syscall number for write
     mov rdi, 1 ; sets file descriptor to stdout (1)
-    mov rdi, print_newline_char ; pointer to newline char
+    mov rsi, print_newline_char ; pointer to newline char
     mov rdx, 1 ; length 1 byte
     syscall ; performs the syscall
 

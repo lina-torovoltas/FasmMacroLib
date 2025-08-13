@@ -47,11 +47,11 @@ macro itoa number, buffer { ; string length -> eax
 
 ; Console Output Macros
 
-macro print str, str_len { ; total bytes written -> eax
-    mov eax, 4 ; sets syscall number for write
+macro print str, str_len { ; total bytes written -> eax 
     push str_len ; sets length of string
     push str ; sets pointer to string to write
     push 1 ; sets file descriptor to stdout (1)
+    mov eax, 4 ; sets syscall number for write
     push eax
     int 80h ; performs the syscal
 
@@ -69,10 +69,10 @@ macro printl times, str, str_len { ; total bytes written -> eax
     mov edi, times ; moves times to edi (loop counter)
 
     .loop: ; .loop label start
-        mov eax, 4 ; sets syscall number for write
         push str_len ; sets length of string
         push str ; sets pointer to string to write
         push 1 ; sets file descriptor to stdout (1)
+        mov eax, 4 ; sets syscall number for write
         push eax
         int 80h ; performs the syscal
 
