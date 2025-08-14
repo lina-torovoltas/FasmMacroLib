@@ -1,6 +1,12 @@
+; WARNING: This code is experimental and may behave unpredictably
+
 ; Auxiliary Macros
 
 macro clr [reg] { xor reg, reg } ; clears the specified registers using xor
+
+macro push [reg] { push reg } ; saves multiple registers onto the stack
+
+macro pop [reg] { pop reg } ; restores multiple registers from the stack
 
 macro exit value {
     mov eax, 1 ; sets syscall number for exit
@@ -14,6 +20,8 @@ macro exit value {
 ; Convert Macros
 
 macro itoa number, buffer { ; string length -> eax
+    push ecx, edi, esi, edx, ebx ; saves ecx, edi, esi, edx and ebx registers
+
     local .loop, .reverse ; declares local labels .loop and .reverse
     xor ecx, ecx ; clears ecx (loop counter)
     mov edi, buffer ; sets edi to point to buffer start
@@ -41,13 +49,17 @@ macro itoa number, buffer { ; string length -> eax
     mov eax, edx ; moves string length to eax
 
     mov byte [edi], 0 ; writes null terminator at end of string 
+
+    pop ebx, edx, esi, edi, ecx ; restores ebx, edx, esi, edi, and ecx registers
 }
 
 
 
 ; Console Output Macros
 
-macro print str, str_len { ; total bytes written -> eax 
+macro print str, str_len { ; total bytes written -> eax
+    push ecx, edx, ebx, edi ; saves ebx, ecx and edx registers
+
     push str_len ; sets length of string
     push str ; sets pointer to string to write
     push 1 ; sets file descriptor to stdout (1)
@@ -55,17 +67,27 @@ macro print str, str_len { ; total bytes written -> eax
     push eax
     int 80h ; performs the syscal
 
+    xor edi, edi ; clears edi (counter)
+    add edi, eax ; adds number of bytes written to edi
+
     mov eax, 4 ; sets syscall number for write
     push 1 ; length 1 byte
     push print_newline_char ; pointer to newline char
     push 1 ; sets file descriptor to stdout (1)
     push eax
     int 80h ; performs the syscal
+
+    add eax, edi ; adds number of bytes written to eax
+
+    pop edi, ebx, edx, ecx ; restores edx, ecx and ebx registers
 }
 
 macro printl times, str, str_len { ; total bytes written -> eax
+    push esi, edi, ecx, ebx, edx ; saves esi, edi, ecx, ebx and edx registers
+
     local .loop ; declares local label .loop
 
+    xor esi, esi ; clears esi (counter)
     mov edi, times ; moves times to edi (loop counter)
 
     .loop: ; .loop label start
@@ -76,6 +98,8 @@ macro printl times, str, str_len { ; total bytes written -> eax
         push eax
         int 80h ; performs the syscal
 
+        add esi, 1 ; adds 1 byte written to esi
+
         mov eax, 4 ; sets syscall number for write
         push 1 ; length 1 byte
         push print_newline_char ; pointer to newline char
@@ -83,9 +107,14 @@ macro printl times, str, str_len { ; total bytes written -> eax
         push eax
         int 80h ; performs the syscal
 
+        add esi, 1 ; adds 1 byte written to esi
 
         dec edi ; decrements edi
         jnz .loop ; jumps to .loop if edi not zero
+
+    mov eax, esi ; moves total bytes written from esi to eax
+
+    pop edx, ebx, ecx, edi, esi ; restores edx, ebx, ecx, edi and esi registers
 }
 
 

@@ -1,3 +1,5 @@
+; WARNING: This code is experimental and may behave unpredictably
+
 ; This code works only on 32-bit FreeBSD!!!
 
 format ELF executable 9
