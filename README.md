@@ -1,7 +1,7 @@
 # FasmMacroLib
 ![Language](https://img.shields.io/badge/language%20-%20Assembly-red)
-![CPU](https://img.shields.io/badge/CPU-x86_/_x64_/_x16_/_ARM-orange)
-![OS](https://img.shields.io/badge/OS-Linux--DOS--BSD-0078D4)
+![CPU](https://img.shields.io/badge/CPU-x86_x64_x16_ARM-orange)
+![OS](https://img.shields.io/badge/OS-Linux_DOS_BSD-0078D4)
 ![License](https://img.shields.io/github/license/lina-torovoltas/FasmMacrosLib)
 ![GitHub release](https://img.shields.io/github/v/release/lina-torovoltas/FasmMacrosLib)
 ![Downloads](https://img.shields.io/github/downloads/lina-torovoltas/FasmMacrosLib/total)</br>
