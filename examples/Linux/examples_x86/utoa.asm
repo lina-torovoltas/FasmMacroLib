@@ -9,20 +9,20 @@ entry start
 segment readable executable
 
 start:
-    itoa -1, buffer 
-    mov edx, eax ; When using print/println/printn with itoa, move the length of the string from register eax to register edx
+    utoa 0, buffer 
+    mov edx, eax ; When using print/println/printn with utoa, move the length of the string from register eax to register edx
     println buffer, edx
     
-    mov eax, 42
-    itoa eax, buffer 
+    mov eax, 244939252
+    utoa eax, buffer 
     mov edx, eax
     println buffer, edx
 
-    itoa [number], buffer 
+    utoa [number], buffer 
     mov edx, eax
     println buffer, edx
 
-    itoa -12345, buffer
+    utoa 12345, buffer
     mov edx, eax
     printn 2, buffer, edx
 
@@ -35,4 +35,4 @@ start:
 segment readable writeable
 
 buffer rb 10
-number dd 42949672
+number dd 4294967295

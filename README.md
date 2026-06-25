@@ -1,15 +1,15 @@
 # FasmMacroLib
 ![Language](https://img.shields.io/badge/language%20-%20Assembly-red)
 ![CPU](https://img.shields.io/badge/CPU-x86_x64_x16_ARM-orange)
-![OS](https://img.shields.io/badge/OS-Linux_DOS_BSD-0078D4)
+![OS](https://img.shields.io/badge/OS-Linux_MS--DOS_FreeBSD_MacOS-0078D4)
 ![License](https://img.shields.io/github/license/lina-torovoltas/FasmMacroLib)
 ![GitHub last commit](https://img.shields.io/github/last-commit/lina-torovoltas/FasmMacrolib)
 ![GitHub release](https://img.shields.io/github/v/release/lina-torovoltas/FasmMacroLib)
 ![Downloads](https://img.shields.io/github/downloads/lina-torovoltas/FasmMacroLib/total)</br>
 
 
-FasmMacroLib is a macro library designed to simplify FASM programming upon Linux, DOS and BSD.</br>
-It supports Linux (x86, x64, ARM, ARM64), DOS (x16), and FreeBSD (x86, x64).
+FasmMacroLib is a macro library designed to simplify FASM programming upon Linux, MacOS, MS-DOS and FreeBSD.</br>
+It supports Linux (x86, x64, ARM, ARM64), MacOS(ARM64), MS-DOS (x16), and FreeBSD (x86, x64).
 
 ## Usage
 
@@ -24,10 +24,10 @@ All macros are located within the `macrolib` directory, structured by OS and arc
 Provide the correct path within thy `.asm` file.</br>
 Here are some examples:
 ```asm
-include 'macrolib/LINUX/linux_x64.inc'   ; for Linux x64
-include 'macrolib/LINUX/linux_arm64.inc' ; for Linux ARM64
-include 'macrolib/DOS/dos_x16.inc'       ; for DOS x16
-include 'macrolib/BSD/freebsd_x64.inc'   ; for FreeBSD x64
+include 'macrolib/LINUX/linux_x64.inc'       ; for Linux x64
+include 'macrolib/LINUX/linux_arm64.inc'     ; for Linux ARM64
+include 'macrolib/DOS/dos_x16.inc'           ; for DOS x16
+include 'macrolib/FreeBSD/freebsd_x64.inc'   ; for FreeBSD x64
 ```
 
 Full documentation of available macros is provided in [macro_usage.md](macro_usage.md).</br>
@@ -36,7 +36,7 @@ Practical code snippets can be perused inside the [examples](examples) folder.
 ## Building Examples
 
 Thou canst download pre-built binaries from the releases section, or compile the source code thyself.</br>
-Ensure that `make`, `fasm`, and `fasmarm` are installed and available in thy system PATH.</br>
+Ensure that `make`, `fasm`, `llvm`, `clang` and `fasmarm` are installed and available in thy system PATH.</br>
 Compile the examples using make:
 ```bash
 cd FasmMacrosLib

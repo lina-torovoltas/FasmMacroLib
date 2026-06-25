@@ -1,15 +1,11 @@
 ; Auxiliary Macros
 
-macro clr [reg] { xor reg, reg } ; clears the specified registers using xor
-
-macro push [reg] { push reg } ; saves multiple registers onto the stack
-
-macro pop [reg] { pop reg } ; restores multiple registers from the stack
+macro clr [reg] { xor reg, reg }
 
 macro exit value {
-    mov rax, 60 ; sets syscall number for exit
-    mov rdi, value ; sets exit code
-    syscall ; performs the syscall
+    mov rax, 60
+    mov rdi, value
+    syscall
 }
 
 
@@ -17,63 +13,111 @@ macro exit value {
 ; Convert Macros
 
 macro itoa number, buffer { ; string length -> rax
-    push rcx, rdi, rsi, rdx, rbx ; saves rcx, rdi, rsi, rdx and rbx registers
+    push rcx r8 rdi rsi rdx rbx
+    
+    local .loop, .reverse, .skip_neg
 
-    local .loop, .reverse ; declares local labels .loop and .reverse
+    clr rcx
+    clr r8
+    mov rdi, buffer
+    mov rsi, number
 
-    xor rcx, rcx ; clears rcx (loop counter)
-    mov rdi, buffer ; sets rdi to point to buffer start
-    mov rsi, number ; moves input number to rsi 
+    test rsi, rsi
+    jns .loop
+    neg rsi
+    mov r8, 1
+    mov byte [rdi], '-'
+	inc rdi
+	
+    .loop:
+    	xor rdx, rdx
+        mov rax, rsi
+        mov rbx, 10
+        div rbx
+        add dl, '0'
+        push dx
+        inc rcx
+        mov rsi, rax
+        test rax, rax
+        jnz .loop
 
-    .loop: ; .loop label start
-        xor rdx, rdx ; clears rdx (high dividend part)
-        mov rax, rsi ; moves number to rax for division
-        mov rbx, 10 ; sets divisor to 10 (decimal base)
-        div rbx ; divides combined value in rdx:rax by rbx, quotient stored in rax, remainder stored in rdx
-        add dl, '0' ; converts remainder to ASCII digit
-        push dx ; pushes digit to stack
-        inc rcx ; increments loop counter
-        mov rsi, rax ; updates number with quotient
-        test rax, rax ; tests if quotient is zero
-        jnz .loop ; continues loop if not zero
+    mov rdx, rcx
 
-    mov rdx, rcx ; moves string length to rdx
+    .reverse:
+        pop ax
+        stosb
+        loop .reverse
 
-    .reverse: ; .reverse label start
-        pop ax ; pops digit from stack into ax
-        stosb ; stores al at [rdi] and increments rdi
-        loop .reverse ; loops rcx times to write digits in order
+    mov byte [rdi], 0
 
-    mov rax, rdx ; moves string length to rax
+    test r8, r8
+    jz .skip_neg
+    inc rdx
 
-    mov byte [rdi], 0 ; writes null terminator at end of string
+    .skip_neg:
+    mov rax, rdx
+    
+    pop rbx rdx rsi rdi r8 rcx
+}
 
-    pop rbx, rdx, rsi, rdi, rcx ; restores rbx, rdx, rsi, rdi and rcx registers
+macro utoa number, buffer { ; string length -> rax
+    push rcx rdi rsi rdx rbx
+
+    local .loop, .reverse
+
+    clr rcx
+    mov rdi, buffer
+    mov rsi, number
+
+    .loop:
+        clr rdx
+        mov rax, rsi
+        mov rbx, 10
+        div rbx
+        add dl, '0'
+        push dx
+        inc rcx
+        mov rsi, rax
+        test rax, rax
+        jnz .loop
+
+    mov rdx, rcx
+
+    .reverse:
+        pop ax
+        stosb
+        loop .reverse
+
+    mov rax, rdx
+
+    mov byte [rdi], 0
+
+    pop rbx rdx rsi rdi rcx
 }
 
 
 
 ; Directory Management Macros
 
-macro mkdir dir_name, permissions { ; error code -> rax
-    push rdi, rsi ; saves rdi and rsi registers
+macro mkdir dir_name, permissions { ; 0 or error code -> rax
+    push rdi rsi
 
-    mov rax, 83 ; sets syscall number for mkdir
-    mov rdi, dir_name ; sets path to directory
-    mov rsi, permissions ; sets permissions
-    syscall ; performs the syscall
+    mov rax, 83
+    mov rdi, dir_name
+    mov rsi, permissions
+    syscall
 
-    pop rsi, rdi ; restores rsi and rdi registers
+    pop rsi rdi
 }
 
-macro rmdir dir_name { ; error code -> rax
-    push rdi ; saves rdi register
+macro rmdir dir_name { ; 0 or error code -> rax
+    push rdi
 
-    mov rax, 84 ; sets syscall number for rmdir
-    mov rdi, dir_name ; sets path to directory
-    syscall ; performs the syscall
+    mov rax, 84
+    mov rdi, dir_name
+    syscall
 
-    pop rdi ; restores rdi register
+    pop rdi
 }
 
 
@@ -81,59 +125,122 @@ macro rmdir dir_name { ; error code -> rax
 ; Console Output Macros
 
 macro print str, str_len { ; total bytes written -> rax
-    push rsi, rdx, rdi, rbx ; saves rsi, rdx, rdi and rbx registers
+    push rdi rsi rdx rcx
 
-    mov rsi, str ; sets pointer to string to write
-    mov rdx, str_len ; sets length of string
-    mov rax, 1 ; sets syscall number for write
-    mov rdi, 1 ; sets file descriptor to stdout (1)
-    syscall ; performs the syscall
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, str
+    mov rdx, str_len
+    syscall
 
-    xor rbx, rbx ; clears rbx (counter)
-    mov rbx, rax ; adds number of bytes written to rbx
-
-    mov rax, 1 ; sets syscall number for write
-    mov rdi, 1 ; sets file descriptor to stdout (1)
-    mov rsi, print_newline_char ; pointer to newline char
-    mov rdx, 1 ; length 1 byte
-    syscall ; performs the syscall
-
-    add rax, rbx ; adds number of bytes written to rax
-
-    pop rbx, rdi, rdx, rsi ; restores rbx, rdi, rdx and rsi registers
+    pop rcx rdx rsi rdi
 }
 
-macro printl times, str, str_len { ; total bytes written -> rax
-    push r8, rbx, rsi, rdx, rdi ; saves r8, rbx, rsi, rdx and rdi registers
+macro println str, str_len { ; total bytes written -> rax
+    push rdi rsi rdx rbx rcx
 
-    local .loop ; declares local label .loop
+    local .newline, .done
 
-    xor r8, r8 ; clears r8 (counter)
-    mov rbx, times ; moves times to rbx (loop counter)
+	mov rax, 1
+	mov rdi, 1
+    mov rsi, str
+    mov rdx, str_len
+    syscall
 
-    .loop: ; .loop label start
-        mov rsi, str ; sets pointer to string to write
-        mov rdx, str_len ; sets length of string
-        mov rax, 1 ; sets syscall number for write
-        mov rdi, 1 ; sets file descriptor to stdout (1)
-        syscall ; performs the syscall
+    xor rbx, rbx
+    mov rbx, rax
 
-        add r8, rax ; adds number of bytes written to r8
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, .newline
+    mov rdx, 1
+    syscall
 
-        mov rax, 1 ; sets syscall number for write
-        mov rdi, 1 ; sets file descriptor to stdout (1)
-        mov rsi, print_newline_char ; pointer to newline char
-        mov rdx, 1 ; length 1 byte
-        syscall ; performs the syscall
+    add rax, rbx
+    
+    jmp .done
+    .newline db 10
+    
+    .done:
+    
+    pop rcx rbx rdx rsi rdi
+}
 
-        add r8, 1 ; adds 1 byte written to r8
+macro printn times, str, str_len { ; total bytes written -> rax
+    push rbx rcx
 
-        dec rbx ; decrements rbx
-        jnz .loop ; jumps to .loop if rbx not zero
+    local .loop
 
-    mov rax, r8 ; moves total bytes written from r8 to rax
+    xor rbx, rbx
+    mov rcx, times
 
-    pop rdi, rdx, rsi, rbx, r8 ; restores rdi, rdx, rsi, rbx and r8 registers
+    .loop:
+        println str, str_len
+
+        add rbx, rax
+        dec rcx
+        
+        jnz .loop
+
+    mov rax, rbx
+
+    pop rbx rcx
+}
+
+
+
+; Console Input Macros
+
+macro input buffer, size { ; bytes read -> rax
+    push rdi rsi rdx
+
+    mov rax, 0
+    mov rdi, 0
+    mov rsi, buffer
+    mov rdx, size
+    syscall
+
+    pop rdx rsi rdi 
+}
+
+
+
+; Process Macros
+
+macro fork { ; child PID, 0 or error code -> rax
+    mov rax, 57
+    syscall
+}
+
+macro waitpid pid { ; PID or error code -> rax
+	push rdi rsi rdx
+	
+    mov rdi, pid
+    mov rax, 61
+    xor rsi, rsi
+    xor rdx, rdx
+    syscall
+    
+	pop rdx rsi rdi
+}
+
+
+
+; Memory macros
+
+macro alloc_buf size { ; pointer to allocated buffer -> rax
+    push rdi rsi rdx r10 r8 r9
+
+    mov rax, 9
+    mov rdi, 0
+    mov rsi, size
+    mov rdx, 3
+    mov r10, 34
+    mov r8, -1
+    mov r9, 0
+    syscall
+
+    pop r9 r8 r10 rdx rsi rdi
 }
 
 
@@ -141,33 +248,96 @@ macro printl times, str, str_len { ; total bytes written -> rax
 ; Misc Macros
 
 macro time { ; current time -> rax
-    push rdi ; saves rdi register
+    push rdi
 
-    mov rax, 201 ; sets syscall number for time
-    xor rdi, rdi ; sets argument to NULL (store time in rax)
-    syscall ; performs the syscall
+    mov rax, 201
+    xor rdi, rdi
+    syscall
 
-    pop rdi ; restores rdi register
+    pop rdi
 
 }
 
-macro run command { ; error code -> rax
-    local .path, .arg2str, .arg3str, .argv
+macro run command {
+	push rbx 
+	
+    local .child, .error, .done
+    
+    fork
+    test rax, rax
+    jz .child
+    js .error
+    
+    mov rbx, rax
+    waitpid rbx
+    jmp .done
+    
+    .child:
+        exec command
+    .error:
+        exit 1
+    .done:
 
-    mov rax, 59 ; sets syscall number for execve
-    lea rdi, [.path] ; loads pointer to program path "/bin/sh"
-    lea rsi, [.argv] ; loads pointer to argument vector array
-    xor rdx, rdx ; clears rdx (envp pointer set to NULL)
-    syscall ; performs the syscall
-
-    .path db "/bin/sh", 0 ; defines path string "/bin/sh" null-terminated
-    .arg2str db "-c", 0 ; defines second argument "-c" null-terminated
-    .arg3str db command, 0 ; defines third argument as the command string null-terminated
-    .argv dq .path, .arg2str, .arg3str, 0 ; defines argv array with pointers to path, arg2str, arg3str, and NULL terminator
+    pop rbx
 }
 
+macro exec command { ; error code -> rax
+    local .path, .arg2, .arg3, .argv
 
+    mov rax, 59
+    lea rdi, [.path]
+    lea rsi, [.argv]
+    xor rdx, rdx
+    syscall
 
-; Data Section
+    exit rax
 
-print_newline_char db 10
+    .path  db "/bin/sh", 0
+    .arg2  db "-c", 0
+    .arg3  db command, 0
+    .argv  dq .path, .arg2, .arg3, 0
+}
+
+macro delay_ms ms { ; 0 or error code -> rax
+    push rcx rdx rdi rsi
+
+    sub rsp, 16
+
+    mov rax, ms
+    mov rcx, 1000
+    xor rdx, rdx
+    div rcx
+
+    mov qword [rsp], rax
+
+    mov rax, rdx
+    imul rax, 1000000
+    mov qword [rsp+8], rax
+
+    mov rax, 35
+    mov rdi, rsp
+    xor rsi, rsi
+    syscall
+
+    add rsp,16
+
+    pop rsi rdi rdx rcx
+}
+
+macro get_rand { ; random number -> rax
+    push rdx
+
+    local .seed_retry, .rand_retry
+
+    .seed_retry:
+        rdseed rdx
+        jnc .seed_retry
+
+    .rand_retry:
+        rdrand rax
+        jnc .rand_retry
+
+    xor rax, rdx
+
+    pop rdx
+}

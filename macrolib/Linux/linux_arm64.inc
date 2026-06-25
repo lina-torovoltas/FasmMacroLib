@@ -2,6 +2,8 @@
 
 macro clr [reg] { mov reg, #0 } ; clears the specified registers using mov
 
+
+; TODO: ARM64 SP requires 16-byte alignment, single 8-byte STRs will crash outside raw syscalls
 macro push [reg] { str reg, [sp, #-8]! } ; saves multiple registers onto the stack
 
 macro pop [reg] { ldr reg, [sp], #8 } ; restores multiple registers from the stack

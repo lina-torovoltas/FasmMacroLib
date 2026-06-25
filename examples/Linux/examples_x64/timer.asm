@@ -9,8 +9,18 @@ entry start
 segment readable executable
 
 start:
-    printn 2, msg1, msg1_len
-    printn 3, msg2, msg2_len
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, msg1
+    mov rdx, msg1_len
+    syscall
+
+    delay_ms 500
+
+    mov rax, 1
+    mov rsi, msg2
+    mov rdx, msg2_len
+    syscall
 
     mov rax, 60
     xor rdi, rdi
@@ -20,8 +30,8 @@ start:
 
 segment readable writeable
 
-msg1 db 'This message will be repeated two times'
+msg1 db "Print number one", 0xA
 msg1_len = $ - msg1
 
-msg2 db 'This message will be repeated three times'
+msg2 db "Print number two after pause", 0xA
 msg2_len = $ - msg2

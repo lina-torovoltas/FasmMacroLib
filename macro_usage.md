@@ -1,5 +1,9 @@
 # FasmMacroLib Documentation
 
+## WARNING
+The documentation below is significantly outdated due to a major library update.</br>
+To see the latest macro usage examples, please go to the [examples](examples) directory.
+
 ## Note
 
 Some macros return data in a register.</br>

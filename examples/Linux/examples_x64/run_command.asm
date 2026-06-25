@@ -10,3 +10,7 @@ segment readable executable
 
 start:
     run "echo test"
+    
+    mov rax, 60
+    xor rdi, rdi
+    syscall

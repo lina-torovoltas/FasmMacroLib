@@ -2,6 +2,8 @@
 
 macro clr [reg] { mov reg, #0 } ; clears the specified registers using mov
 
+
+; TODO: ARM32 ABI requires 8-byte alignment, single 4-byte STRs will bug outside raw syscalls
 macro push [reg] { ; saves multiple registers onto the stack
     sub sp, sp, #4
     str reg, [sp]

@@ -10,3 +10,7 @@ segment readable executable
 
 start:
     run "echo test"
+    
+    mov eax, 1
+    xor ebx, ebx
+    int 80h

@@ -9,8 +9,8 @@ entry start
 segment readable executable
 
 start:
-    printl 2, msg1, msg1_len
-    printl 3, msg2, msg2_len
+    printn 2, msg1, msg1_len
+    printn 3, msg2, msg2_len
 
     mov eax, 1
     xor ebx, ebx
