@@ -100,24 +100,24 @@ macro utoa number, buffer { ; string length -> rax
 ; Directory Management Macros
 
 macro mkdir dir_name, permissions { ; 0 or error code -> rax
-    push rdi rsi
+    push rdi rsi rcx r11
 
     mov rax, 83
     mov rdi, dir_name
     mov rsi, permissions
     syscall
 
-    pop rsi rdi
+    pop r11 rcx rsi rdi
 }
 
 macro rmdir dir_name { ; 0 or error code -> rax
-    push rdi
+    push rdi rcx r11
 
     mov rax, 84
     mov rdi, dir_name
     syscall
 
-    pop rdi
+    pop r11 rcx rdi
 }
 
 
@@ -125,7 +125,7 @@ macro rmdir dir_name { ; 0 or error code -> rax
 ; Console Output Macros
 
 macro print str, str_len { ; total bytes written -> rax
-    push rdi rsi rdx rcx
+    push rdi rsi rdx rcx r11
 
     mov rax, 1
     mov rdi, 1
@@ -133,11 +133,11 @@ macro print str, str_len { ; total bytes written -> rax
     mov rdx, str_len
     syscall
 
-    pop rcx rdx rsi rdi
+    pop r11 rcx rdx rsi rdi
 }
 
 macro println str, str_len { ; total bytes written -> rax
-    push rdi rsi rdx rbx rcx
+    push rdi rsi rdx rbx rcx r11
 
     local .newline, .done
 
@@ -163,7 +163,7 @@ macro println str, str_len { ; total bytes written -> rax
     
     .done:
     
-    pop rcx rbx rdx rsi rdi
+    pop r11 rcx rbx rdx rsi rdi
 }
 
 macro printn times, str, str_len { ; total bytes written -> rax
@@ -192,7 +192,7 @@ macro printn times, str, str_len { ; total bytes written -> rax
 ; Console Input Macros
 
 macro input buffer, size { ; bytes read -> rax
-    push rdi rsi rdx
+    push rdi rsi rdx rcx r11
 
     mov rax, 0
     mov rdi, 0
@@ -200,7 +200,7 @@ macro input buffer, size { ; bytes read -> rax
     mov rdx, size
     syscall
 
-    pop rdx rsi rdi 
+    pop r11 rcx rdx rsi rdi 
 }
 
 
@@ -229,7 +229,7 @@ macro waitpid pid { ; PID or error code -> rax
 ; Memory macros
 
 macro alloc_buf size { ; pointer to allocated buffer -> rax
-    push rdi rsi rdx r10 r8 r9
+    push rdi rsi rdx r10 r8 r9 rcx r11
 
     mov rax, 9
     mov rdi, 0
@@ -240,7 +240,7 @@ macro alloc_buf size { ; pointer to allocated buffer -> rax
     mov r9, 0
     syscall
 
-    pop r9 r8 r10 rdx rsi rdi
+    pop r11 rcx r9 r8 r10 rdx rsi rdi
 }
 
 
@@ -248,18 +248,18 @@ macro alloc_buf size { ; pointer to allocated buffer -> rax
 ; Misc Macros
 
 macro time { ; current time -> rax
-    push rdi
+    push rdi rcx r11
 
     mov rax, 201
     xor rdi, rdi
     syscall
 
-    pop rdi
+    pop r11 rcx rdi
 
 }
 
 macro run command {
-	push rbx 
+	push rbx rcx r11
 	
     local .child, .error, .done
     
@@ -278,7 +278,7 @@ macro run command {
         exit 1
     .done:
 
-    pop rbx
+    pop r11 rcx rbx
 }
 
 macro exec command { ; error code -> rax
@@ -299,7 +299,7 @@ macro exec command { ; error code -> rax
 }
 
 macro delay_ms ms { ; 0 or error code -> rax
-    push rcx rdx rdi rsi
+    push rcx rdx rdi rsi r11
 
     sub rsp, 16
 
@@ -321,7 +321,7 @@ macro delay_ms ms { ; 0 or error code -> rax
 
     add rsp,16
 
-    pop rsi rdi rdx rcx
+    pop r11 rsi rdi rdx rcx
 }
 
 macro get_rand { ; random number -> rax

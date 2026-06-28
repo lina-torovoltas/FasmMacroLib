@@ -11,7 +11,7 @@ segment readable executable
 align 4
 
 start:
-    print msg, msg_len
+    println msg, msg_len
 
     mov x8, #93
     mov x0, #0
@@ -21,5 +21,5 @@ start:
 
 segment readable writeable
 
-msg db 'Test output string', 0xA
+msg db 'Test output string'
 msg_len = $ - msg

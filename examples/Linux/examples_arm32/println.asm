@@ -11,8 +11,7 @@ segment readable executable
 align 4
 
 start:
-    printn 2, msg1, msg1_len
-    printn 3, msg2, msg2_len
+    println msg, msg_len
 
     mov r7, #1
     mov r0, #0
@@ -22,8 +21,5 @@ start:
 
 segment readable writeable
 
-msg1 db 'This message will be repeated two times'
-msg1_len = $ - msg1
-
-msg2 db 'This message will be repeated three times'
-msg2_len = $ - msg2
+msg db 'Test output string'
+msg_len = $ - msg

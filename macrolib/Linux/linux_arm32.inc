@@ -2,8 +2,6 @@
 
 macro clr [reg] { mov reg, #0 } ; clears the specified registers using mov
 
-
-; TODO: ARM32 ABI requires 8-byte alignment, single 4-byte STRs will bug outside raw syscalls
 macro push [reg] { ; saves multiple registers onto the stack
     sub sp, sp, #4
     str reg, [sp]
@@ -15,9 +13,9 @@ macro pop [reg] { ; restores multiple registers from the stack
 }
 
 macro exit value {
-    mov r7, #1 ; sets syscall number for exit
-    mov r0, value ; sets exit code
-    svc 0 ; performs the syscall
+    mov r7, #1
+    mov r0, value
+    svc 0
 }
 
 
@@ -25,24 +23,24 @@ macro exit value {
 ; Directory Management Macros
 
 macro mkdir dir_name, permissions { ; error code -> r0
-    push r7, r1 ; saves r7 and r1 registers
+    push r7, r1
 
-    mov r7, #39 ; sets syscall number for mkdir
-    mov r0, dir_name ; sets path to directory
-    mov r1, permissions ; sets permissions
-    svc 0 ; performs the syscall
+    mov r7, #39
+    mov r0, dir_name
+    mov r1, permissions
+    svc 0
 
-    pop r1, r7 ; restores r1 and r7 registers
+    pop r1, r7
 }
 
 macro rmdir dir_name {  ; error code -> r0
-    push r7 ; saves r7 register
+    push r7 r1
 
-    mov r7, #40 ; sets syscall number for rmdir
-    mov r0, dir_name ; sets path to directory
-    svc 0 ; performs the syscall
+    mov r7, #40
+    mov r0, dir_name
+    svc 0
 
-    pop r7 ; restores r7 register
+    pop r1 r7
 }
 
 
@@ -50,64 +48,64 @@ macro rmdir dir_name {  ; error code -> r0
 ; Console Output Macros
 
 macro print str, str_len { ; total bytes written -> r0
-    push r1, r2, r3, r7 ; saves r1, r2, r3 and r7 registers
+    push r1, r2, r7, r1
     
-    mov r1, str ; sets pointer to string to write
-    mov r2, str_len ; sets length of string
-    mov r7, #4 ; sets syscall number for write
-    mov r0, #1 ; sets file descriptor to stdout (1) 
-    svc 0 ; performs the syscall
+    mov r1, str
+    mov r2, str_len
+    mov r7, #4
+    mov r0, #1
+    svc 0
 
-    mov r3, #0 ; clears r3 (counter)
-    add r3, r3, r0 ; adds number of bytes written to r3
-
-    mov r7, #4 ; sets syscall number for write
-    mov r0, #1 ; sets file descriptor to stdout (1)
-    mov r1, print_newline_char ; pointer to newline char
-    mov r2, 1 ; length 1 byte
-    svc 0 ; performs the syscall
-
-    add r0, r0, r3 ; adds number of bytes written to r0
-
-    pop r7, r3, r2, r1 ; restores r7, r3, r2 and r1 registers
+    pop r1, r7, r2, r1
 }
 
-macro printl times, str, str_len { ; total bytes written -> r0
-    push r3, r4, r1, r2, r7 ; saves r3, r4, r1, r2 and r7 registers
+macro println str, str_len { ; total bytes written -> r0
+    push r1, r2, r7, r3
 
-    local .loop ; declares local label .loop
+    local .newline, .done
 
-    mov r3, #0 ; clears r3 (counter)
-    mov r4, times ; moves times to r4 (loop counter)
+    mov r1, str
+    mov r2, str_len
+    mov r7, #4
+    mov r0, #1
+    svc 0
 
-    .loop: ; .loop label start
-        mov r1, str ; sets pointer to string to write
-        mov r2, str_len ; sets length of string
-        mov r7, #4 ; sets syscall number for write
-        mov r0, #1 ; sets file descriptor to stdout (1) 
-        svc 0 ; performs the syscall
+    mov r3, r0
 
-        add r3, r3, r0 ; adds number of bytes written to r3
+    b .done
+    .newline db 10
+    align 4
+    .done:
 
-        mov r7, #4 ; sets syscall number for write
-        mov r0, #1 ; sets file descriptor to stdout (1)
-        mov r1, print_newline_char ; pointer to newline char
-        mov r2, 1 ; length 1 byte
-        svc 0 ; performs the syscall
+    mov r7, #4
+    mov r0, #1
+    adr r1, .newline
+    mov r2, #1
+    svc 0
 
-        add r3, r3, r0 ; adds number of bytes written to r3
+    add r0, r0, r3
 
-        sub r4, r4, #1 ; decrements r4
-        cmp r4, #0 ; compare r4 with 0
-        bne .loop ; jumps to .loop if r4 not zero
-
-    mov r0, r3 ; moves total bytes written from r3 to r0
-
-    pop r7, r2, r1, r4, r3 ; restores r7, r2, r1, r4 and r3 register
+    pop r3, r7, r2, r1
 }
 
+macro printn times, str, str_len { ; total bytes written -> r0
+    push r3, r4
 
+    local .loop
 
-; Data Section
+    mov r3, #0
+    mov r4, times
 
-print_newline_char db 10
+    .loop:
+        println str, str_len
+
+        add r3, r3, r0
+
+        sub r4, r4, #1
+        cmp r4, #0
+        bne .loop
+
+    mov r0, r3
+
+    pop r4, r3
+}
