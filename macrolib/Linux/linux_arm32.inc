@@ -34,13 +34,13 @@ macro mkdir dir_name, permissions { ; error code -> r0
 }
 
 macro rmdir dir_name {  ; error code -> r0
-    push r7 r1
+    push r7, r1
 
     mov r7, #40
     mov r0, dir_name
     svc 0
 
-    pop r1 r7
+    pop r1, r7
 }
 
 

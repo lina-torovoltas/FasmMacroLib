@@ -1,18 +1,11 @@
-; WARNING: This code is experimental and may behave unpredictably
-
 ; Auxiliary Macros
 
-macro clr [reg] { xor reg, reg } ; clears the specified registers using xor
-
-macro push [reg] { push reg } ; saves multiple registers onto the stack
-
-macro pop [reg] { pop reg } ; restores multiple registers from the stack
+macro clr [reg] { xor reg, reg }
 
 macro exit value {
-    mov eax, 1 ; sets syscall number for exit
-    push value ; sets exit code
-    push eax
-    int 80h ; performs the syscall
+    mov eax, 1
+    push value eax
+    int 80h
 }
 
 
@@ -20,37 +13,88 @@ macro exit value {
 ; Convert Macros
 
 macro itoa number, buffer { ; string length -> eax
-    push ecx, edi, esi, edx, ebx ; saves ecx, edi, esi, edx and ebx registers
+    push ecx edi esi edx ebx
 
-    local .loop, .reverse ; declares local labels .loop and .reverse
-    xor ecx, ecx ; clears ecx (loop counter)
-    mov edi, buffer ; sets edi to point to buffer start
-    mov esi, number ; moves input number to esi 
+    local .loop, .reverse, .skip_neg
 
-    .loop: ; .loop label start
-        xor edx, edx ; clears edx (high dividend part)
-        mov eax, esi ; moves number to eax for division
-        mov ebx, 10 ; sets divisor to 10 (decimal base)
-        div ebx ; divides combined value in edx:eax by ebx, quotient stored in eax, remainder stored in edx
-        add dl, '0' ; converts remainder to ASCII digit
-        push dx ; pushes digit to stack
-        inc ecx ; increments loop counter
-        mov esi, eax ; updates number with quotient
-        test eax, eax ; tests if quotient is zero
-        jnz .loop ; continues loop if not zero
+    xor ecx, ecx
+    xor ebx, ebx
+    mov edi, buffer
+    mov esi, number
 
-    mov edx, ecx ; moves string length to edx
+    test esi, esi
+    jns .loop
+    neg esi
+    mov ebx, 1
+    mov byte [edi], '-'
+    inc edi
 
-    .reverse: ; .reverse label start
-        pop ax ; pops digit from stack into ax
-        stosb ; stores al at [edi] and increments edi
-        loop .reverse ; loops ecx times to write digits in order
+    .loop:
+        xor edx, edx
+        mov eax, esi
+        push ecx
+        mov ecx, 10
+        div ecx
+        pop ecx
+        add dl, '0'
+        push dx
+        inc ecx
+        mov esi, eax
+        test eax, eax
+        jnz .loop
 
-    mov eax, edx ; moves string length to eax
+    mov edx, ecx
 
-    mov byte [edi], 0 ; writes null terminator at end of string 
+    .reverse:
+        pop ax
+        stosb
+        loop .reverse
 
-    pop ebx, edx, esi, edi, ecx ; restores ebx, edx, esi, edi, and ecx registers
+    mov byte [edi], 0
+
+    test ebx, ebx
+    jz .skip_neg
+    inc edx
+
+    .skip_neg:
+    mov eax, edx
+
+    pop ebx edx esi edi ecx
+}
+
+macro utoa number, buffer { ; string length -> eax
+    push ecx edi esi edx ebx
+
+    local .loop, .reverse
+
+    xor ecx, ecx
+    mov edi, buffer
+    mov esi, number
+
+    .loop:
+        xor edx, edx
+        mov eax, esi
+        mov ebx, 10
+        div ebx
+        add dl, '0'
+        push dx
+        inc ecx
+        mov esi, eax
+        test eax, eax
+        jnz .loop
+
+    mov edx, ecx
+
+    .reverse:
+        pop ax
+        stosb
+        loop .reverse
+
+    mov eax, edx
+
+    mov byte [edi], 0
+
+    pop ebx edx esi edi ecx
 }
 
 
@@ -58,67 +102,79 @@ macro itoa number, buffer { ; string length -> eax
 ; Console Output Macros
 
 macro print str, str_len { ; total bytes written -> eax
-    push ecx, edx, ebx, edi ; saves ebx, ecx and edx registers
-
-    push str_len ; sets length of string
-    push str ; sets pointer to string to write
-    push 1 ; sets file descriptor to stdout (1)
-    mov eax, 4 ; sets syscall number for write
+    push str_len str 1
+    mov eax, 4
     push eax
-    int 80h ; performs the syscal
-
-    xor edi, edi ; clears edi (counter)
-    add edi, eax ; adds number of bytes written to edi
-
-    mov eax, 4 ; sets syscall number for write
-    push 1 ; length 1 byte
-    push print_newline_char ; pointer to newline char
-    push 1 ; sets file descriptor to stdout (1)
-    push eax
-    int 80h ; performs the syscal
-
-    add eax, edi ; adds number of bytes written to eax
-
-    pop edi, ebx, edx, ecx ; restores edx, ecx and ebx registers
+    int 80h
+    add esp, 16
 }
 
-macro printl times, str, str_len { ; total bytes written -> eax
-    push esi, edi, ecx, ebx, edx ; saves esi, edi, ecx, ebx and edx registers
+macro println str, str_len { ; total bytes written -> eax
+    push ecx
 
-    local .loop ; declares local label .loop
+    local .newline, .done
 
-    xor esi, esi ; clears esi (counter)
-    mov edi, times ; moves times to edi (loop counter)
+    push str_len str 1
+    mov eax, 4
+    push eax
+    int 80h
+    add esp, 16
 
-    .loop: ; .loop label start
-        push str_len ; sets length of string
-        push str ; sets pointer to string to write
-        push 1 ; sets file descriptor to stdout (1)
-        mov eax, 4 ; sets syscall number for write
-        push eax
-        int 80h ; performs the syscal
+    mov ecx, eax
 
-        add esi, 1 ; adds 1 byte written to esi
+    push 1 .newline 1
+    mov eax, 4
+    push eax
+    int 80h
+    add esp, 16
 
-        mov eax, 4 ; sets syscall number for write
-        push 1 ; length 1 byte
-        push print_newline_char ; pointer to newline char
-        push 1 ; sets file descriptor to stdout (1)
-        push eax
-        int 80h ; performs the syscal
+    add eax, ecx
 
-        add esi, 1 ; adds 1 byte written to esi
+    jmp .done
+    .newline db 10
+    .done:
 
-        dec edi ; decrements edi
-        jnz .loop ; jumps to .loop if edi not zero
+    pop ecx
+}
 
-    mov eax, esi ; moves total bytes written from esi to eax
+macro printn times, str, str_len { ; total bytes written -> eax
+    push ebx ecx
 
-    pop edx, ebx, ecx, edi, esi ; restores edx, ebx, ecx, edi and esi registers
+    local .loop
+
+    xor ebx, ebx
+    mov ecx, times
+
+    .loop:
+        println str, str_len
+
+        add ebx, eax
+        dec ecx
+        jnz .loop
+
+    mov eax, ebx
+
+    pop ecx ebx
 }
 
 
 
-; Data Section
+; Misc Macros
 
-print_newline_char db 10
+macro get_rand { ; random number -> eax
+    push edx
+
+    local .seed_retry, .rand_retry
+
+    .seed_retry:
+        rdseed edx
+        jnc .seed_retry
+
+    .rand_retry:
+        rdrand eax
+        jnc .rand_retry
+
+    xor eax, edx
+
+    pop edx
+}
