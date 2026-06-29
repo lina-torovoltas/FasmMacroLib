@@ -131,7 +131,7 @@ macro println str, str_len { ; total bytes written -> eax
     add eax, ecx
 
     jmp .done
-    .newline db 10
+    .newline db 0xA
     .done:
 
     pop ecx

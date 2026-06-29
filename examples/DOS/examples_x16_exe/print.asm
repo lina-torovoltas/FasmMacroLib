@@ -14,4 +14,4 @@ start:
 
 
 
-msg db 'Test output string', 0Ah, '$'
+msg db 'Test output string', 0xD, 0xA, '$'

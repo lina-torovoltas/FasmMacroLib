@@ -106,7 +106,7 @@ macro println str, str_len { ; total bytes written -> x0
     mov x3, x0
 
     b .done
-    .newline db 10
+    .newline db 0xA
     align 4
     .done:
 

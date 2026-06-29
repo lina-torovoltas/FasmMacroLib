@@ -9,9 +9,9 @@ use16
 start:
     rmdir name
 
-    mov ah, 4Ch
+    mov ah, 76
     int 21h
 
 
 
-name db 'test',0 
+name db 'test', 0 

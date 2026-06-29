@@ -7,6 +7,11 @@ org 100h
 
 
 start:
-    clr ax
+    println msg
+
     mov ah, 76
     int 21h
+
+
+
+msg db 'Test output string', '$'

@@ -1,15 +1,82 @@
 ; Auxiliary Macros
 
-macro clr [reg] { xor reg, reg } ; clears the specified registers using xor
-
-macro push [reg] { push reg } ; saves multiple registers onto the stack
-
-macro pop [reg] { pop reg } ; restores multiple registers from the stack
+macro clr [reg] { xor reg, reg }
 
 macro exit code {
-    mov ah, 4Ch ; sets syscall number for exit
-    mov al, code ; sets exit code
-    int 21h ; performs the syscall
+    mov ah, 76
+    mov al, code
+    int 21h
+}
+
+
+
+; Convert Macros
+
+macro utoa number, buffer {
+    push ax bx cx dx di
+
+    local .loop, .reverse
+
+    mov ax, number
+    mov cx, 0
+    mov di, buffer
+
+    .loop:
+        xor dx, dx
+        mov bx, 10
+        div bx
+        add dl, '0'
+        push dx
+        inc cx
+        test ax, ax
+        jnz .loop
+
+    .reverse:
+        pop ax
+        mov [di], al
+        inc di
+        loop .reverse
+
+    mov byte [di], '$'
+
+    pop di dx cx bx ax
+}
+
+macro itoa number, buffer {
+    push ax bx cx dx di
+
+    local .loop, .reverse, .skip_neg
+
+    mov ax, number
+    xor cx, cx
+    mov di, buffer
+
+    test ax, ax
+    jns .skip_neg
+    neg ax
+    mov byte [di], '-'
+    inc di
+
+    .skip_neg:
+    .loop:
+        xor dx, dx
+        mov bx, 10
+        div bx
+        add dl, '0'
+        push dx
+        inc cx
+        test ax, ax
+        jnz .loop
+
+    .reverse:
+        pop ax
+        mov [di], al
+        inc di
+        loop .reverse
+
+    mov byte [di], '$'
+
+    pop di dx cx bx ax
 }
 
 
@@ -17,23 +84,23 @@ macro exit code {
 ; Directory Management Macros
 
 macro mkdir dir_name { ; error code -> ax
-    push dx ; saves dx register
+    push dx
 
-    mov ah, 39h ; sets syscall number for mkdir
-    mov dx, dir_name ; sets path to directory
-    int 21h ; performs the syscall
+    mov ah, 57
+    mov dx, dir_name
+    int 21h
 
-    pop dx ; restores dx register
+    pop dx
 }
 
 macro rmdir dir_name { ; error code -> ax
-    push dx ; saves dx register
+    push dx
 
-    mov ah, 3Ah ; sets syscall number for rmdir
-    mov dx, dir_name ; sets path to directory
-    int 21h ; performs the syscall
+    mov ah, 58
+    mov dx, dir_name
+    int 21h
 
-    pop dx ; restores dx register
+    pop dx
 }
 
 
@@ -41,28 +108,43 @@ macro rmdir dir_name { ; error code -> ax
 ; Console Output Macros
 
 macro print msg {
-    push dx ; saves dx registerx
+    push ax dx
 
-    mov ah, 9 ; sets syscall number for write
-    mov dx, msg ; sets pointer to string to write
-    int 21h ; performs the syscall
+    mov ah, 9
+    mov dx, msg
+    int 21h
 
-    pop dx ; restores dx register
+    pop dx ax
 }
 
-macro printl times, str {
-    push dx, cx       ; saves dx and cx registers
+macro println msg {
+    push ax dx
 
-    local .loop       ; declares local loop label
+    mov ah, 9
+    mov dx, msg
+    int 21h
 
-    mov cx, times     ; sets loop counter
+    mov ah, 2
+    mov dl, 0xD
+    int 21h
+
+    mov ah, 2
+    mov dl, 0xA
+    int 21h
+
+    pop dx ax
+}
+
+macro printn times, msg {
+    push cx
+
+    local .loop
+
+    mov cx, times
 
     .loop:
-    mov ah, 9         ; sets syscall number for write
-    mov dx, str       ; sets pointer to string to write
-    int 21h           ; performs the syscall
+        println msg
+    loop .loop
 
-    loop .loop        ; decrements cx and jumps if cx not 0
-
-    pop cx, dx        ; restores cx and dx registers
+    pop cx
 }

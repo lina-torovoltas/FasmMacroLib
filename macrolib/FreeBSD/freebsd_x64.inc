@@ -1,11 +1,11 @@
 ; Auxiliary Macros
 
-macro clr [reg] { xor reg, reg } ; clears the specified registers using xor
+macro clr [reg] { xor reg, reg }
 
 macro exit value {
-    mov rax, 1 ; sets syscall number for exit
-    mov rdi, value ; sets exit code
-    syscall ; performs the syscall
+    mov rax, 1
+    mov rdi, value
+    syscall
 }
 
 
@@ -158,7 +158,7 @@ macro println str, str_len { ; total bytes written -> rax
     add rax, rbx
 
     jmp .done
-    .newline db 10
+    .newline db 0xA
     .done:
 
     pop r11 r10 r9 r8 rcx rbx rdx rsi rdi

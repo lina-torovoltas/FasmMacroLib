@@ -7,13 +7,13 @@ use16
 
 
 start:
-    printl 2, msg1
-    printl 3, msg2
+    printn 2, msg1
+    printn 3, msg2
 
-    mov ah, 4Ch
+    mov ah, 76
     int 21h
 
 
 
-msg1 db 'This message will be repeated two times', 0Ah, '$'
-msg2 db 'This message will be repeated three times', 0Ah, '$'
+msg1 db 'This message will be repeated two times', '$'
+msg2 db 'This message will be repeated three times', '$'

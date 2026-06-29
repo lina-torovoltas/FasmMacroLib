@@ -73,7 +73,7 @@ macro println str, str_len { ; total bytes written -> r0
     mov r3, r0
 
     b .done
-    .newline db 10
+    .newline db 0xA
     align 4
     .done:
 

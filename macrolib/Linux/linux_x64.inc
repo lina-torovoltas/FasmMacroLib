@@ -159,7 +159,7 @@ macro println str, str_len { ; total bytes written -> rax
     add rax, rbx
     
     jmp .done
-    .newline db 10
+    .newline db 0xA
     
     .done:
     

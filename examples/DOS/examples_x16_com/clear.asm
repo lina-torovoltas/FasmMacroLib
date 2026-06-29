@@ -7,6 +7,6 @@ use16
 
 
 start:
-    clr ah
-    mov ah, 4Ch
+    clr ax
+    mov ah, 76
     int 21h

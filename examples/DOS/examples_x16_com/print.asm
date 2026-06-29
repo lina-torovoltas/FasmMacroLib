@@ -9,9 +9,9 @@ use16
 start:
     print msg
 
-    mov ah, 4Ch
+    mov ah, 76
     int 21h
 
 
 
-msg db 'Test output string', 0Ah, '$'
+msg db 'Test output string', 0xD, 0xA, '$'

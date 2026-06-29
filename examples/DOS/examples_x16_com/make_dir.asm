@@ -9,7 +9,7 @@ use16
 start:
     mkdir name
 
-    mov ah, 4Ch
+    mov ah, 76
     int 21h
 
 
