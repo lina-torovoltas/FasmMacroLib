@@ -2,9 +2,21 @@
 
 macro clr [reg] { mov reg, #0 }
 
-macro push [reg] { str reg, [sp, #-8]! }
+macro push reg1, reg2 {
+  if reg2 eq
+    str reg1, [sp, #-16]!
+  else
+    stp reg1, reg2, [sp, #-16]!
+  end if
+}
 
-macro pop [reg] { ldr reg, [sp], #8 }
+macro pop reg1, reg2 {
+  if reg2 eq
+    ldr reg1, [sp], #16
+  else
+    ldp reg1, reg2, [sp], #16
+  end if
+}
 
 macro exit value {
     mov x8, #93
@@ -17,7 +29,9 @@ macro exit value {
 ; Convert Macros
 
 macro utoa number, buffer { ; string length -> x0
-    push x2, x3, x4, x1, x5, x6
+    push x2, x3
+    push x4, x1
+    push x5, x6
 
     local .loop, .reverse
 
@@ -46,7 +60,9 @@ macro utoa number, buffer { ; string length -> x0
     mov w6, #0
     strb w6, [x3]
 
-    pop x6, x5, x1, x4, x3, x2
+    pop x5, x6
+    pop x4, x1
+    pop x2, x3
 }
 
 
@@ -54,18 +70,22 @@ macro utoa number, buffer { ; string length -> x0
 ; Directory Management Macros
 
 macro mkdir dir_name, permissions { ; error code -> x0
-    push x8, x1, x2, xzr
+    push x8, x1
+    push x2
+
     mov x8, #34
     mov x0, #-100
     adr x1, dir_name
     mov x2, permissions
     svc 0
 
-    pop xzr, x2, x1, x8
+    pop x2
+    pop x8, x1
 }
 
 macro rmdir dir_name { ; error code -> x0
-    push x8, x1, x2, xzr
+    push x8, x1
+    push x2
 
     mov x8, #35
     mov x0, #-100
@@ -73,7 +93,8 @@ macro rmdir dir_name { ; error code -> x0
     mov x2, #512
     svc 0
 
-    pop xzr, x2, x1, x8
+    pop x2
+    pop x8, x1
 }
 
 
@@ -81,7 +102,8 @@ macro rmdir dir_name { ; error code -> x0
 ; Console Output Macros
 
 macro print str, str_len { ; total bytes written -> x0
-    push x1, x2, x8, xzr
+    push x8, x1
+    push x2
 
     adr x1, str
     mov x2, str_len
@@ -89,11 +111,13 @@ macro print str, str_len { ; total bytes written -> x0
     mov x0, #1
     svc 0
 
-    pop xzr, x8, x2, x1
+    pop x2
+    pop x8, x1
 }
 
 macro println str, str_len { ; total bytes written -> x0
-    push x1, x2, x8, x3
+    push x1, x2
+    push x8, x3
 
     local .newline, .done
 
@@ -118,7 +142,8 @@ macro println str, str_len { ; total bytes written -> x0
 
     add x0, x0, x3
 
-    pop x3, x8, x2, x1
+    pop x8, x3
+    pop x1, x2
 }
 
 macro printn times, str, str_len { ; total bytes written -> x0
@@ -140,5 +165,5 @@ macro printn times, str, str_len { ; total bytes written -> x0
 
     mov x0, x3
 
-    pop x4, x3
+    pop x3, x4
 }

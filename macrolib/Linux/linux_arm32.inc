@@ -1,15 +1,35 @@
 ; Auxiliary Macros
 
-macro clr [reg] { mov reg, #0 } ; clears the specified registers using mov
+macro clr [reg] { mov reg, #0 }
 
-macro push [reg] { ; saves multiple registers onto the stack
-    sub sp, sp, #4
-    str reg, [sp]
+macro push [reg] {
+    forward
+        sub sp, sp, #4
+        str reg, [sp]
+    common
+        local count
+        count = 0
+    forward
+        count = count + 1
+    common
+        if count and 1
+            sub sp, sp, #4
+        end if
 }
 
-macro pop [reg] { ; restores multiple registers from the stack
-    ldr reg, [sp]
-    add sp, sp, #4
+macro pop [reg] {
+    common
+        local count
+        count = 0
+    forward
+        count = count + 1
+    common
+        if count and 1
+            add sp, sp, #4
+        end if
+    forward
+        ldr reg, [sp]
+        add sp, sp, #4
 }
 
 macro exit value {
@@ -48,7 +68,7 @@ macro rmdir dir_name {  ; error code -> r0
 ; Console Output Macros
 
 macro print str, str_len { ; total bytes written -> r0
-    push r1, r2, r7, r1
+    push r1, r2, r7
     
     mov r1, str
     mov r2, str_len
@@ -56,7 +76,7 @@ macro print str, str_len { ; total bytes written -> r0
     mov r0, #1
     svc 0
 
-    pop r1, r7, r2, r1
+    pop r7, r2, r1
 }
 
 macro println str, str_len { ; total bytes written -> r0

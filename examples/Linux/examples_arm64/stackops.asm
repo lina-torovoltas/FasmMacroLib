@@ -11,7 +11,8 @@ segment readable executable
 align 4
 
 macro print str, str_len {
-    push x8, x1, x2, xzr ; push xzr to align stack to 16 bytes
+    push x8, x1
+    push x2
 
     mov x8, #64
     mov x0, #1
@@ -19,7 +20,8 @@ macro print str, str_len {
     mov x2, str_len
     svc 0
 
-    pop xzr, x2, x1, x8
+    pop x2, 
+    pop x8, x1
 }
 
 

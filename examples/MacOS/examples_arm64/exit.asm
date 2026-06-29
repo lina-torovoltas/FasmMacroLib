@@ -7,5 +7,5 @@ public start as '_main'
 section '.text' executable
 align 4
 
-start: 
+start:
     exit 0
