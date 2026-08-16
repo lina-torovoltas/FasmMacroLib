@@ -1,0 +1,25 @@
+; This code works only on ARM 64-bit Linux!!!
+
+format ELF64 executable 3
+processor cpu64_v8
+include '../../../macrolib/Linux/linux_arm64.inc'
+entry start
+
+
+
+segment readable executable
+align 4
+
+start:
+    alloc_buf 50
+    mov x19, x0
+
+    clear_buf x19, 50 ; frees the buffer allocated with alloc_buf
+
+    mov w9, 'b'
+    strb w9, [x19, #0]
+    ; ^ this instruction will cause a segfault, since the buffer has already been unmapped by clear_buf above
+
+    mov x8, #93
+    mov x0, #0
+    svc 0
