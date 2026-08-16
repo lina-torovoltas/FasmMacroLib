@@ -167,3 +167,201 @@ macro printn times, str, str_len { ; total bytes written -> x0
 
     pop x3, x4
 }
+
+
+
+; Console Input Macros
+
+macro input buffer, size { ; bytes read -> x0
+    push x1, x2
+    push x8
+
+    mov x8, #63
+    mov x0, #0
+    adr x1, buffer
+    mov x2, size
+    svc 0
+
+    pop x8
+    pop x1, x2 
+}
+
+
+
+; Process Macros
+
+macro fork { ; child PID, 0 or error code -> x0
+    push x1, x2
+    push x3, x4
+    push x8
+
+    mov x8, #220
+    mov x0, #17
+    mov x1, #0
+    mov x2, #0
+    mov x3, #0
+    mov x4, #0
+    svc 0
+
+    pop x8
+    pop x3, x4
+    pop x1, x2
+}
+
+macro waitpid pid { ; PID or error code -> x0
+    push x1, x2
+    push x8
+
+    mov x0, pid
+    mov x8, #260
+    mov x1, #0
+    mov x2, #0
+    svc 0
+
+    pop x8
+    pop x1, x2
+}
+
+
+
+; Memory macros
+
+macro alloc_buf size { ; pointer to allocated buffer -> x0
+    push x1, x2
+    push x3, x4
+    push x5, x8
+
+    mov x8, #222
+    mov x0, #0
+    mov x1, size
+    mov x2, #3
+    mov x3, #34
+    mov x4, #-1
+    mov x5, #0
+    svc 0
+
+    pop x5, x8
+    pop x3, x4
+    pop x1, x2
+}
+
+macro clear_buf addr, size { ; 0 or -1 -> r0
+    push x8, x1
+    
+    mov x8, #215
+    mov x0, addr
+    mov x1, size
+    svc 0
+    
+    pop x8, x1
+}
+
+
+
+; Misc Macros
+
+macro time { ; seconds -> x0, microseconds -> x1
+    push x8
+    sub sp, sp, #16
+
+    mov x8, #113
+    mov x0, #0
+    mov x1, sp
+    svc 0
+
+    ldr x0, [sp]
+    ldr x1, [sp, #8]
+
+    add sp, sp, #16
+    pop x8
+}
+
+macro run command { ; error code -> r0
+    push x19
+
+    local .child, .error, .done
+
+    fork
+    cmp x0, #0
+    b.eq .child
+    b.lt .error
+
+    mov x19, x0
+    waitpid x19
+    b .done
+
+    .child:
+        exec command
+    .error:
+        exit 1
+    .done:
+
+    pop x19
+}
+
+macro exec command { ; error code -> x0
+    local .path, .arg2, .arg3, .argv
+
+    mov x8, #221
+    adr x0, .path
+    adr x1, .argv
+    mov x2, #0
+    svc 0
+
+    exit x0
+
+    .path  db "/bin/sh", 0
+    .arg2  db "-c", 0
+    .arg3  db command, 0
+    
+    align 8
+    .argv  dd .path, .arg2, .arg3, 0
+    align 4
+}
+
+macro delay_ms ms { ; 0 or error code -> x0
+    push x1, x2
+    push x19, x20
+    push x8
+
+    mov x8, ms
+    mov x19, #1000
+    udiv x20, x8, x19
+    msub x2, x20, x19, x8
+
+    movz x19, #0x4240
+    movk x19, #0x000F, lsl 16
+    mul x2, x2, x19
+
+    stp x20, x2, [sp, #-16]!
+
+    mov x8, #101
+    mov x0, sp
+    mov x1, #0
+    svc 0
+
+    add sp, sp, #16
+
+    pop x8
+    pop x19, x20
+    pop x1, x2
+}
+
+
+macro get_rand { ; random number -> x0
+    push x2, x8
+
+    local .seed_retry, .rand_retry
+
+    .seed_retry:
+        mrs x2, s3_3_c2_c4_1 ; rndrrs
+        b.cs .seed_retry
+
+    .rand_retry:
+        mrs x8, s3_3_c2_c4_0 ; rndr
+        b.cs .rand_retry
+
+    eor x0, x8, x2
+
+    pop x2, x8
+}
