@@ -245,11 +245,22 @@ macro alloc_buf size { ; pointer to allocated buffer -> x0
     pop x1, x2
 }
 
+macro clear_buf addr, size { ; 0 or -1 -> r0
+    push x8, x1
+    
+    mov x8, #215
+    mov x0, addr
+    mov x1, size
+    svc 0
+    
+    pop x8, x1
+}
+
 
 
 ; Misc Macros
 
-macro time { ; current time -> x0
+macro time { ; seconds -> x0, microseconds -> x1
     push x8
     sub sp, sp, #16
 
@@ -265,7 +276,7 @@ macro time { ; current time -> x0
     pop x8
 }
 
-macro run command {
+macro run command { ; error code -> r0
     push x19
 
     local .child, .error, .done
