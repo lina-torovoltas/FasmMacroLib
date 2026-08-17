@@ -10,5 +10,6 @@ segment readable executable
 
 start:
     clr rax, rdi
+    
     mov rax, 60
     syscall

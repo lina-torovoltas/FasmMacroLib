@@ -9,8 +9,8 @@ entry start
 segment readable executable
 
 start:
-    time
+    get_rand
     mov ebx, eax
-    
+
     mov eax, 1
     int 80h

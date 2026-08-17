@@ -10,29 +10,21 @@ entry start
 segment readable executable
 align 4
 
-macro print str, str_len {
-    push r7, r1, r2, r1 ; push r1 twice to align stack to 8 bytes
-
-    mov r7, #4
-    mov r0, #1
-    mov r1, str
-    mov r2, str_len
-    svc 0
-
-    pop r1, r2, r1, r7
-}
-
-
 start:
-    print msg, msg_len
-
     mov r7, #1
-    mov r0, #0
+    mov r0, #42
+    mov r1, #492
+
+    push r7, r0
+    push r1
+
+    mov r7, #42
+    mov r0, #42
+    mov r1, #42
+
+    pop r1
+    pop r7, r0
+
+    eor r0, r0, r1 
+
     svc 0
-
-
-
-segment readable writeable
-
-msg db 'Test output string', 10
-msg_len = $ - msg

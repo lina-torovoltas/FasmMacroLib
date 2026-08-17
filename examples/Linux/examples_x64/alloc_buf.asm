@@ -27,6 +27,7 @@ start:
     syscall
     
     alloc_buf 32
+    
     mov qword [rax], 42
     mov rdi, [rax]
     mov rax, 60

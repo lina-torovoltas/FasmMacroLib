@@ -27,6 +27,7 @@ start:
     int 80h
 
     alloc_buf 32
+    
     mov dword [eax], 42
     mov ebx, [eax]
     mov eax, 1

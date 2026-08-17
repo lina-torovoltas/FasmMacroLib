@@ -10,7 +10,7 @@ segment readable executable
 
 start:
     time
-
+    mov rdi, rax
+    
     mov rax, 60
-    xor rdi, rdi
     syscall

@@ -243,6 +243,16 @@ macro alloc_buf size { ; pointer to allocated buffer -> rax
     pop r11 rcx r9 r8 r10 rdx rsi rdi
 }
 
+macro clear_buf addr, size { ; 0 or -1 -> rax
+    push rdi rsi rcx r11
+
+    mov rax, 11
+    mov rdi, addr
+    mov rsi, size
+    syscall
+
+    pop r11 rcx rsi rdi
+}
 
 
 ; Misc Macros
@@ -258,7 +268,7 @@ macro time { ; current time -> rax
 
 }
 
-macro run command {
+macro run command { ; error code -> rax
 	push rbx rcx r11
 	
     local .child, .error, .done

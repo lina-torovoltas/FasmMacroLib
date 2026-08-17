@@ -2,34 +2,24 @@
 
 macro clr [reg] { mov reg, #0 }
 
-macro push [reg] {
-    forward
-        sub sp, sp, #4
-        str reg, [sp]
-    common
-        local count
-        count = 0
-    forward
-        count = count + 1
-    common
-        if count and 1
-            sub sp, sp, #4
-        end if
+macro push reg1, reg2 {
+    if reg2 eq
+        str reg1, [sp, #-8]!
+    else
+        sub sp, sp, #8
+        str reg1, [sp]
+        str reg2, [sp, #4]
+    end if
 }
 
-macro pop [reg] {
-    common
-        local count
-        count = 0
-    forward
-        count = count + 1
-    common
-        if count and 1
-            add sp, sp, #4
-        end if
-    forward
-        ldr reg, [sp]
-        add sp, sp, #4
+macro pop reg1, reg2 {
+    if reg2 eq
+        ldr reg1, [sp], #8
+    else
+        ldr reg1, [sp]
+        ldr reg2, [sp, #4]
+        add sp, sp, #8
+    end if
 }
 
 macro exit value {

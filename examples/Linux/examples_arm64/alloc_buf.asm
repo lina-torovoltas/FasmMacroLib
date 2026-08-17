@@ -36,6 +36,7 @@ start:
     svc 0
 
     alloc_buf 32
+    
     mov x9, #42
     str x9, [x0]
     ldr x0, [x0]

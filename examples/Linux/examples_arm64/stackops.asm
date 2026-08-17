@@ -10,31 +10,21 @@ entry start
 segment readable executable
 align 4
 
-macro print str, str_len {
-    push x8, x1
-    push x2
-
-    mov x8, #64
-    mov x0, #1
-    adr x1, str
-    mov x2, str_len
-    svc 0
-
-    pop x2, 
-    pop x8, x1
-}
-
-
 start:
-    print msg, msg_len
-
     mov x8, #93
-    mov x0, #0
+    mov x0, #42
+    mov x1, #492
+
+    push x8, x0
+    push x1
+
+    mov x8, #42
+    mov x0, #42
+    mov x1, #42
+
+    pop x1
+    pop x8, x0
+
+    eor x0, x0, x1 
+
     svc 0
-
-
-
-segment readable writeable
-
-msg db 'Test output string', 10
-msg_len = $ - msg

@@ -12,7 +12,16 @@ align 4
 
 start:
     run "echo test"
+
+    print msg, msg_len
     
     mov r7, #1
     mov r0, #0
     svc 0
+
+
+
+segment readable writeable
+
+msg db 'Print after run', 0xA
+msg_len = $ - msg

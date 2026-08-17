@@ -19,4 +19,4 @@ start:
 
 segment readable writeable
 
-name db "test"
+name db "test", 0x0

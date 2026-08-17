@@ -245,7 +245,16 @@ macro alloc_buf size { ; pointer to allocated buffer -> eax
     pop ebp edi esi edx ecx ebx
 }
 
+macro clear_buf addr, size { ; 0 or -1 -> eax
+    push ebx ecx
 
+    mov eax, 91
+    mov ebx, addr
+    mov ecx, size
+    int 80h
+
+    pop ecx ebx
+}
 
 ; Misc Macros
 
@@ -260,7 +269,7 @@ macro time { ; current time -> eax
 
 }
 
-macro run command {
+macro run command { ; error code -> eax
 	push ebx 
 	
     local .child, .error, .done
@@ -326,19 +335,18 @@ macro delay_ms ms { ; 0 or error code -> eax
 }
 
 macro get_rand { ; random number -> eax
-    push edx
+    push ebx ecx
 
-    local .seed_retry, .rand_retry
+    sub esp, 4
+    mov ebx, esp
 
-    .seed_retry:
-        rdseed edx
-        jnc .seed_retry
+    mov eax, 355
+    mov ecx, 4
+    xor edx, edx
+    int 80h
 
-    .rand_retry:
-        rdrand eax
-        jnc .rand_retry
+    mov eax, [esp]
+    add esp, 4
 
-    xor eax, edx
-
-    pop edx
+    pop ecx ebx
 }

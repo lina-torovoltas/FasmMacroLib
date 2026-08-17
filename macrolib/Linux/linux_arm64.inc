@@ -3,19 +3,19 @@
 macro clr [reg] { mov reg, #0 }
 
 macro push reg1, reg2 {
-  if reg2 eq
-    str reg1, [sp, #-16]!
-  else
-    stp reg1, reg2, [sp, #-16]!
-  end if
+    if reg2 eq
+        str reg1, [sp, #-16]!
+    else
+        stp reg1, reg2, [sp, #-16]!
+    end if
 }
 
 macro pop reg1, reg2 {
-  if reg2 eq
-    ldr reg1, [sp], #16
-  else
-    ldp reg1, reg2, [sp], #16
-  end if
+    if reg2 eq
+        ldr reg1, [sp], #16
+    else
+        ldp reg1, reg2, [sp], #16
+    end if
 }
 
 macro exit value {
