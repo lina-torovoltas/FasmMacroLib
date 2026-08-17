@@ -10,7 +10,7 @@ section '.text' executable
 align 4
 
 start:
-    print msg, msg_len
+    rmdir name
 
     mov x0, #0
     mov x16, #1
@@ -19,5 +19,4 @@ start:
 
 align 4
 
-msg db 'Test output string', 0xA
-msg_len = $ - msg
+name db "test", 0x0

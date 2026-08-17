@@ -1,3 +1,5 @@
+; This code works only on ARM 64-bit MacOS!!!
+
 format ELF64
 include '../../../macrolib/MacOS/macos_arm64.inc'
 processor cpu64_v8
