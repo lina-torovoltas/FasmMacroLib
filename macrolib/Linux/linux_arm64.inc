@@ -354,14 +354,21 @@ macro get_rand { ; random number -> x0
     local .seed_retry, .rand_retry
 
     .seed_retry:
-        mrs x2, s3_3_c2_c4_1 ; rndrrs
+        mrs x2, rndrrs
         b.cs .seed_retry
 
     .rand_retry:
-        mrs x8, s3_3_c2_c4_0 ; rndr
+        mrs x8, rndr
         b.cs .rand_retry
 
     eor x0, x8, x2
 
     pop x2, x8
 }
+
+
+
+; Сustom Mnemonics
+
+rndr equ s3_3_c2_c4_0
+rndrrs equ s3_3_c2_c4_1
