@@ -14,7 +14,7 @@ start:
     alloc_buf 50
     mov x19, x0
 
-    clear_buf x19, 50 ; frees the buffer allocated with alloc_buf
+    free_buf x19, 50 ; frees the buffer allocated with alloc_buf
 
     mov w9, 'b'
     strb w9, [x19, #0]

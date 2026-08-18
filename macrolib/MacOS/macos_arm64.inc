@@ -29,7 +29,7 @@ macro exit code {
 
 ; Convert Macros
 
-macro utoa number, buffer { ; string length -> x0
+macro utoa number, addr { ; string length -> x0
     push x2, x3
     push x4, x1
     push x5, x6
@@ -37,7 +37,7 @@ macro utoa number, buffer { ; string length -> x0
     local .loop, .reverse
 
     mov x2, #0
-    adr x3, buffer
+    mov x3, addr
     mov x4, number
 
     .loop:
@@ -109,7 +109,7 @@ macro print str, str_len {
     push x16
 
     mov x0, #1
-    adr x1, str
+    mov x1, str
     mov x2, str_len
     mov x16, #4
     movk x16, #0x0200, lsl 16
@@ -126,7 +126,7 @@ macro println str, str_len {
     local .newline, .done
 
     mov x0, #1
-    adr x1, str
+    mov x1, str
     mov x2, str_len
     mov x16, #4
     movk x16, #0x0200, lsl 16
@@ -214,5 +214,40 @@ macro alloc_buf size { ; pointer to allocated buffer -> x0
 
     pop x5, x16
     pop x3, x4
+    pop x1, x2
+}
+
+macro free_buf addr, size { ; 0 or -1 -> x0
+    push x16, x1
+
+    mov x0, addr
+    mov x1, size
+    mov x16, #73
+    movk x16, #0x0200, lsl 16
+    svc 80h
+
+    pop x16, x1
+}
+
+
+
+; Misc Macros
+
+macro get_rand { ; random number -> x0
+    push x1, x2
+    push x16
+
+    sub sp, sp, #16
+    mov x0, sp
+
+    mov x1, #8
+    mov x16, #500
+    movk x16, #0x0200, lsl 16
+    svc 80h
+
+    ldr x0, [sp]
+    add sp, sp, #16
+
+    pop x16
     pop x1, x2
 }

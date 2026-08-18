@@ -10,7 +10,8 @@ section '.text' executable
 align 4
 
 start:
-    println msg, msg_len
+    adr x18, msg
+    println x18, msg_len
     
     mov x0, #0
     mov x16, #1

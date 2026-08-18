@@ -12,7 +12,7 @@ start:
     alloc_buf 50
     mov rbx, rax
 
-    clear_buf rbx, 50 ; frees the buffer allocated with alloc_buf
+    free_buf rbx, 50 ; frees the buffer allocated with alloc_buf
 
     mov byte [rbx+0], 'b'
     ; ^ this instruction will cause a segfault, since the buffer has already been unmapped by clear_buf above

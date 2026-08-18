@@ -10,8 +10,11 @@ section '.text' executable
 align 4
 
 start:
-    printn 2, msg1, msg1_len
-    printn 3, msg2, msg2_len
+    adr x18, msg1
+    printn 2, x18, msg1_len
+
+    adr x18, msg2
+    printn 3, x18, msg2_len
 
     mov x0, #0
     mov x16, #1

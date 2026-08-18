@@ -245,7 +245,7 @@ macro alloc_buf size { ; pointer to allocated buffer -> eax
     pop ebp edi esi edx ecx ebx
 }
 
-macro clear_buf addr, size { ; 0 or -1 -> eax
+macro free_buf addr, size { ; 0 or -1 -> eax
     push ebx ecx
 
     mov eax, 91

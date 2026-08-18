@@ -201,7 +201,7 @@ macro alloc_buf size { ; pointer to allocated buffer -> r0
     pop r1, r2
 }
 
-macro clear_buf addr, size { ; 0 or -1 -> r0
+macro free_buf addr, size { ; 0 or -1 -> r0
     push r7, r1
     
     mov r7, #91

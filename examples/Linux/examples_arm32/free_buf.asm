@@ -14,7 +14,7 @@ start:
     alloc_buf 50
     mov r11, r0
 
-    clear_buf r11, 50 ; frees the buffer allocated with alloc_buf
+    free_buf r11, 50 ; frees the buffer allocated with alloc_buf
 
     mov r10, 'b'
     strb r10, [r11, #0]
