@@ -3,7 +3,7 @@
 macro clr [reg] { xor reg, reg }
 
 macro exit value {
-    mov rax, 60
+    mov eax, 60 ; same as mov rax, 60
     mov rdi, value
     syscall
 }
@@ -17,7 +17,7 @@ macro itoa number, buffer { ; string length -> rax
     
     local .loop, .reverse, .skip_neg
 
-    clr rcx
+    clr ecx ; same as clr rcx
     clr r8
     mov rdi, buffer
     mov rsi, number
@@ -25,19 +25,22 @@ macro itoa number, buffer { ; string length -> rax
     test rsi, rsi
     jns .loop
     neg rsi
-    mov r8, 1
+    inc r8
     mov byte [rdi], '-'
 	inc rdi
 	
     .loop:
-    	xor rdx, rdx
+    	clr edx ; same as clr rdx
         mov rax, rsi
-        mov rbx, 10
+        mov ebx, 10 ; same as mov rbx, 10
+
         div rbx
         add dl, '0'
+
         push dx
-        inc rcx
+        inc ecx ; same as inc rcx
         mov rsi, rax
+
         test rax, rax
         jnz .loop
 
@@ -46,6 +49,7 @@ macro itoa number, buffer { ; string length -> rax
     .reverse:
         pop ax
         stosb
+
         loop .reverse
 
     mov byte [rdi], 0
@@ -65,19 +69,22 @@ macro utoa number, buffer { ; string length -> rax
 
     local .loop, .reverse
 
-    clr rcx
+    clr ecx ; same as clr rcx
     mov rdi, buffer
     mov rsi, number
 
     .loop:
-        clr rdx
+        clr edx ; same as clr rdx
         mov rax, rsi
-        mov rbx, 10
+        mov ebx, 10 ; same as mov rbx, 10
+
         div rbx
         add dl, '0'
+
         push dx
-        inc rcx
+        inc ecx ; same as inc rcx
         mov rsi, rax
+
         test rax, rax
         jnz .loop
 
@@ -102,7 +109,7 @@ macro utoa number, buffer { ; string length -> rax
 macro mkdir dir_name, permissions { ; 0 or error code -> rax
     push rdi rsi rcx r11
 
-    mov rax, 83
+    mov eax, 83 ; same as mov rax, 83
     mov rdi, dir_name
     mov rsi, permissions
     syscall
@@ -113,7 +120,7 @@ macro mkdir dir_name, permissions { ; 0 or error code -> rax
 macro rmdir dir_name { ; 0 or error code -> rax
     push rdi rcx r11
 
-    mov rax, 84
+    mov eax, 84 ; same as mov rax, 84
     mov rdi, dir_name
     syscall
 
@@ -127,8 +134,8 @@ macro rmdir dir_name { ; 0 or error code -> rax
 macro print str, str_len { ; total bytes written -> rax
     push rdi rsi rdx rcx r11
 
-    mov rax, 1
-    mov rdi, 1
+    mov eax, 1 ; same as mov rax, 1
+    mov edi, 1 ; same as mov rdi, 1
     mov rsi, str
     mov rdx, str_len
     syscall
@@ -137,54 +144,100 @@ macro print str, str_len { ; total bytes written -> rax
 }
 
 macro println str, str_len { ; total bytes written -> rax
-    push rdi rsi rdx rbx rcx r11
+    push r8 rdi rsi rdx rcx r11
 
-    local .newline, .done
+    mov r8, str_len
+    inc r8
 
-	mov rax, 1
-	mov rdi, 1
+    sub rsp, r8
+
+    dec r8
+
     mov rsi, str
-    mov rdx, str_len
+    mov rdi, rsp
+    mov rcx, r8
+    rep movsb
+
+    mov byte [rsp + r8], 0xA
+
+    mov eax, 1 ; same as mov rax, 1
+    mov edi, 1 ; same as mov rdi, 1
+    mov rsi, rsp
+    inc r8
+    mov rdx, r8
     syscall
 
-    xor rbx, rbx
-    mov rbx, rax
-
-    mov rax, 1
-    mov rdi, 1
-    mov rsi, .newline
-    mov rdx, 1
-    syscall
-
-    add rax, rbx
+    add rsp, r8
     
-    jmp .done
-    .newline db 0xA
-    
-    .done:
-    
-    pop r11 rcx rbx rdx rsi rdi
+    pop r11 rcx rdx rsi rdi r8
 }
 
 macro printn times, str, str_len { ; total bytes written -> rax
-    push rbx rcx
+    push rbx rcx rdx rsi rdi r8 r9 r10
 
-    local .loop
+    local .exp_fill_loop, .fill_remainder, .write, .exit
 
-    xor rbx, rbx
-    mov rcx, times
+    mov r8, str_len
+    imul r8, times
 
-    .loop:
-        println str, str_len
+    test r8, r8
+    jz .exit
 
-        add rbx, rax
-        dec rcx
-        
-        jnz .loop
+    alloc_buf r8
 
-    mov rax, rbx
+    test rax, rax
+    je .exit
 
-    pop rbx rcx
+    mov rbx, rax
+
+    mov rdi, rbx
+    mov rsi, str
+    mov rcx, str_len
+    rep movsb
+
+    mov r9, str_len
+
+    .exp_fill_loop:
+        mov r10, r8
+        sub r10, r9
+
+        cmp r10, r9
+        jb .fill_remainder
+
+        mov rsi, rbx
+        mov rdi, rbx
+        add rdi, r9
+
+        mov rcx, r9
+        rep movsb
+
+        add r9, r9
+        jmp .exp_fill_loop
+
+    .fill_remainder:
+        test r10, r10
+        jz .write
+
+        mov rsi, rbx
+        mov rdi, rbx
+        add rdi, r9
+        mov rcx, r10
+        rep movsb
+
+    .write:
+        mov eax, 1 ; same as mov rax, 1
+        mov edi, 1 ; same as mov rdi, 1
+        mov rsi, rbx
+        mov rdx, r8
+        syscall
+
+    mov rdi, rax
+    free_buf rbx, r8
+    mov rax, rdi
+
+    .exit:
+
+    pop r10 r9 r8 rdi rsi rdx rcx rbx
 }
 
 
@@ -194,8 +247,8 @@ macro printn times, str, str_len { ; total bytes written -> rax
 macro input buffer, size { ; bytes read -> rax
     push rdi rsi rdx rcx r11
 
-    mov rax, 0
-    mov rdi, 0
+    clr eax ; same as clr rax
+    clr edi ; same as clr rax
     mov rsi, buffer
     mov rdx, size
     syscall
@@ -217,8 +270,8 @@ macro waitpid pid { ; PID or error code -> rax
 	
     mov rdi, pid
     mov rax, 61
-    xor rsi, rsi
-    xor rdx, rdx
+    clr esi ; same as clr rsi
+    clr edx ; same as clr rdx
     syscall
     
 	pop rdx rsi rdi
@@ -231,10 +284,10 @@ macro waitpid pid { ; PID or error code -> rax
 macro alloc_buf size { ; pointer to allocated buffer -> rax
     push rdi rsi rdx r10 r8 r9 rcx r11
 
-    mov rax, 9
-    mov rdi, 0
+    mov eax, 9 ; same as mov rax, 9
+    clr edi ; same as clr rdi
     mov rsi, size
-    mov rdx, 3
+    mov edx, 3 ; same as mov rdx, 3
     mov r10, 34
     mov r8, -1
     mov r9, 0
@@ -246,7 +299,7 @@ macro alloc_buf size { ; pointer to allocated buffer -> rax
 macro free_buf addr, size { ; 0 or -1 -> rax
     push rdi rsi rcx r11
 
-    mov rax, 11
+    mov eax, 11 ; same as mov rax, 11
     mov rdi, addr
     mov rsi, size
     syscall
@@ -260,8 +313,8 @@ macro free_buf addr, size { ; 0 or -1 -> rax
 macro time { ; current time -> rax
     push rdi rcx r11
 
-    mov rax, 201
-    xor rdi, rdi
+    mov eax, 201 ; same as mov rax, 201
+    clr edi ; same as clr rdi
     syscall
 
     pop r11 rcx rdi
@@ -294,10 +347,10 @@ macro run command { ; error code -> rax
 macro exec command { ; error code -> rax
     local .path, .arg2, .arg3, .argv
 
-    mov rax, 59
+    mov eax, 59 ; same as mov rax, 59
     lea rdi, [.path]
     lea rsi, [.argv]
-    xor rdx, rdx
+    clr edx ; same as clr rdx
     syscall
 
     exit rax
@@ -314,8 +367,8 @@ macro delay_ms ms { ; 0 or error code -> rax
     sub rsp, 16
 
     mov rax, ms
-    mov rcx, 1000
-    xor rdx, rdx
+    mov ecx, 1000 ; same as mov rcx, 1000
+    clr edx ; same as clr rdx
     div rcx
 
     mov qword [rsp], rax
@@ -324,12 +377,12 @@ macro delay_ms ms { ; 0 or error code -> rax
     imul rax, 1000000
     mov qword [rsp+8], rax
 
-    mov rax, 35
+    mov eax, 35 ; same as mov rax, 35
     mov rdi, rsp
-    xor rsi, rsi
+    clr edi ; same as clr rdi
     syscall
 
-    add rsp,16
+    add rsp, 16
 
     pop r11 rsi rdi rdx rcx
 }

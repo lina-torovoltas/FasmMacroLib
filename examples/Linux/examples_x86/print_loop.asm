@@ -20,8 +20,8 @@ start:
 
 segment readable writeable
 
-msg1 db 'This message will be repeated two times'
+msg1 db 'This message will be repeated two times', 0xA
 msg1_len = $ - msg1
 
-msg2 db 'This message will be repeated three times'
+msg2 db 'This message will be repeated three times', 0xA
 msg2_len = $ - msg2

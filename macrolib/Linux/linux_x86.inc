@@ -17,8 +17,7 @@ macro itoa number, buffer { ; string length -> eax
 
     local .loop, .reverse, .skip_neg
 
-    xor ecx, ecx
-    xor ebx, ebx
+    clr ecx, ebx
     mov edi, buffer
     mov esi, number
 
@@ -30,16 +29,19 @@ macro itoa number, buffer { ; string length -> eax
     inc edi
 
     .loop:
-        xor edx, edx
+        clr edx
         mov eax, esi
         push ecx
         mov ecx, 10
+
         div ecx
         pop ecx
         add dl, '0'
+
         push dx
         inc ecx
         mov esi, eax
+
         test eax, eax
         jnz .loop
 
@@ -48,6 +50,7 @@ macro itoa number, buffer { ; string length -> eax
     .reverse:
         pop ax
         stosb
+
         loop .reverse
 
     mov byte [edi], 0
@@ -67,7 +70,7 @@ macro utoa number, buffer { ; string length -> eax
 
     local .loop, .reverse
 
-    xor ecx, ecx
+    clr ecx
     mov edi, buffer
     mov esi, number
 
@@ -75,11 +78,14 @@ macro utoa number, buffer { ; string length -> eax
         xor edx, edx
         mov eax, esi
         mov ebx, 10
+
         div ebx
         add dl, '0'
+
         push dx
         inc ecx
         mov esi, eax
+
         test eax, eax
         jnz .loop
 
@@ -139,54 +145,100 @@ macro print str, str_len { ; total bytes written -> eax
 }
 
 macro println str, str_len { ; total bytes written -> eax
-    push ebx ecx edx edi
+    push edx esi edi ecx ebx
 
-    local .newline, .done
-
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, str
     mov edx, str_len
-    int 80h
+    inc edx
 
-    xor edi, edi
-    mov edi, eax
+    sub esp, edx
+
+    dec edx
+
+    mov esi, str
+    mov edi, esp
+    mov ecx, edx
+    rep movsb
+
+    mov byte [esp + edx], 0xA
 
     mov eax, 4
     mov ebx, 1
-    mov ecx, .newline
-    mov edx, 1
+    mov ecx, esp
+    inc edx
     int 80h
 
-    add eax, edi
+    add esp, edx
 
-    jmp .done
-    .newline db 0xA
-    
-    .done:
-
-    pop edi edx ecx ebx
+    pop ebx ecx edi esi edx
 }
 
-macro printn times, str, str_len { ; total bytes written -> eax
-    push ebx ecx
+macro printn times, str, str_len {
+    push edx ebx edi esi ecx
 
-    local .loop
+    local .exp_fill_loop, .fill_remainder, .write, .exit
 
-    xor ebx, ebx
-    mov ecx, times
+    mov edx, str_len
+    imul edx, times
 
-    .loop:
-        println str, str_len
+    test edx, edx
+    jz .exit
 
-        add ebx, eax
-        dec ecx
+    alloc_buf edx 
 
-        jnz .loop
+    test eax, eax
+    je .exit
 
-    mov eax, ebx
+    mov ebx, eax
 
-    pop ecx ebx
+    mov edi, ebx
+    mov esi, str
+    mov ecx, str_len
+    rep movsb
+
+    mov eax, str_len
+
+    .exp_fill_loop:
+        mov ecx, edx
+        sub ecx, eax
+
+        cmp ecx, eax
+        jb .fill_remainder
+
+        push eax
+        
+        mov esi, ebx
+        mov edi, ebx
+        add edi, eax
+
+        mov ecx, eax
+        rep movsb
+        
+        pop eax
+        add eax, eax
+        jmp .exp_fill_loop
+
+    .fill_remainder:
+        test ecx, ecx
+        jz .write
+
+        mov esi, ebx
+        mov edi, ebx
+        add edi, eax
+        rep movsb
+
+    .write:
+        mov ecx, ebx
+        mov ebx, 1
+        mov eax, 4
+        int 80h
+
+    push eax
+    free_buf ecx, edx
+    pop eax
+
+    .exit:
+
+    pop ecx esi edi ebx edx
 }
 
 
@@ -197,10 +249,10 @@ macro input buffer, size { ; bytes read -> eax
     push ebx ecx edx
 
     mov eax, 3
-    mov ebx, 0
+    clr ebx
     mov ecx, buffer
     mov edx, size
-    int 0x80
+    int 80h
 
     pop edx ecx ebx
 }
@@ -211,7 +263,7 @@ macro input buffer, size { ; bytes read -> eax
 
 macro fork { ; child PID, 0 or error code -> eax
     mov eax, 2
-    int 0x80
+    int 80h
 }
 
 macro waitpid pid { ; PID or error code -> eax
@@ -221,7 +273,7 @@ macro waitpid pid { ; PID or error code -> eax
     mov ebx, pid
     xor ecx, ecx
     xor edx, edx
-    int 0x80
+    int 80h
 
     pop edx ecx ebx
 }
@@ -234,13 +286,13 @@ macro alloc_buf size { ; pointer to allocated buffer -> eax
     push ebx ecx edx esi edi ebp
 
     mov eax, 192
-    mov ebx, 0
+    clr ebx
     mov ecx, size
     mov edx, 3
     mov esi, 34
     mov edi, -1
-    mov ebp, 0
-    int 0x80
+    clr ebp
+    int 80h
 
     pop ebp edi esi edx ecx ebx
 }
@@ -262,7 +314,7 @@ macro time { ; current time -> eax
     push ebx
 
     mov eax, 13
-    xor ebx, ebx
+    clr ebx
     int 80h
 
     pop ebx
@@ -299,7 +351,7 @@ macro exec command { ; error code -> eax
     lea ebx, [.path]
     lea ecx, [.argv]
     xor edx, edx
-    int 0x80
+    int 80h
 
     exit eax
 
@@ -310,13 +362,13 @@ macro exec command { ; error code -> eax
 }
 
 macro delay_ms ms { ; 0 or error code -> eax
-    push ebx ecx edx esi
+    push ecx edx ebx
 
     sub esp, 8
 
     mov eax, ms
     mov ecx, 1000
-    xor edx, edx
+    clr edx
     div ecx
 
     mov dword [esp], eax
@@ -326,12 +378,12 @@ macro delay_ms ms { ; 0 or error code -> eax
 
     mov eax, 162
     mov ebx, esp
-    xor ecx, ecx
-    int 0x80
+    clr ecx
+    int 80h
 
     add esp, 8
 
-    pop esi edx ecx ebx
+    pop ebx edx ecx ebx
 }
 
 macro get_rand { ; random number -> eax
