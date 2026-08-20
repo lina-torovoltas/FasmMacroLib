@@ -1,5 +1,5 @@
 DIRS_LINUX   = examples_arm32 examples_arm64 examples_x64 examples_x86
-DIRS_FREEBSD = examples_x64 examples_x86
+DIRS_FREEBSD = examples_x64 examples_x86 examples_arm64
 DIRS_DOS     = examples_x16_com examples_x16_exe
 DIRS_MACOS   = examples_arm64
 
@@ -9,6 +9,7 @@ ASM_LINUX_ARM32  = $(wildcard examples/Linux/examples_arm32/*.asm)
 ASM_LINUX_ARM64  = $(wildcard examples/Linux/examples_arm64/*.asm)
 ASM_FREEBSD_X64  = $(wildcard examples/FreeBSD/examples_x64/*.asm)
 ASM_FREEBSD_X86  = $(wildcard examples/FreeBSD/examples_x86/*.asm)
+ASM_FREEBSD_ARM64  = $(wildcard examples/FreeBSD/examples_arm64/*.asm)
 ASM_DOS_COM      = $(wildcard examples/DOS/examples_x16_com/*.asm)
 ASM_DOS_EXE      = $(wildcard examples/DOS/examples_x16_exe/*.asm)
 ASM_MACOS_ARM64  = $(wildcard examples/MacOS/examples_arm64/*.asm)
@@ -51,6 +52,11 @@ FreeBSD:
 		dst=build/FreeBSD/$${src#examples/FreeBSD/}; \
 		dst=$${dst%.asm}; \
 		fasm $$src $$dst; \
+	done
+	@for src in $(ASM_FREEBSD_ARM64); do \
+		dst=build/FreeBSD/$${src#examples/FreeBSD/}; \
+		dst=$${dst%.asm}; \
+		fasmarm $$src $$dst; \
 	done
 
 DOS:
