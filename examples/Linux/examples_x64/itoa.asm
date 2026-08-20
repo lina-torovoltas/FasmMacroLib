@@ -24,7 +24,7 @@ start:
 
     itoa -12345, buffer
     mov r9, rax
-    printn 2, buffer, r9
+    println buffer, r9
 
     mov rax, 60
     xor rdi, rdi

@@ -30,7 +30,7 @@ start:
     mov x0, #1234
     utoa x0, buffer
     mov x2, x0
-    printn 2, buffer, x2
+    println buffer, x2
 
     mov x8, #93
     mov x0, #0

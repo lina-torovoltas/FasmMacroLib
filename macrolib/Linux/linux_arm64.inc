@@ -28,6 +28,57 @@ macro exit value {
 
 ; Convert Macros
 
+macro itoa number, buffer { ; string length -> x0
+    push x2, x3
+    push x4, x1
+    push x5, x6
+    push x7, x8
+
+    local .loop, .reverse, .skip_neg
+
+    mov x2, #0
+    adr x3, buffer
+    mov x4, number
+    mov x7, #0
+
+    cmp x4, #0
+    b.ge .loop
+    neg x4, x4
+    mov x7, #1
+
+    .loop:
+        mov x1, #10
+        udiv x5, x4, x1
+        msub x6, x5, x1, x4
+        add x6, x6, #'0'
+        push w6
+        add x2, x2, #1
+        mov x4, x5
+        cbnz x4, .loop
+
+    cbz x7, .skip_neg
+    mov w8, #'-'
+    push w8
+    add x2, x2, #1
+
+    .skip_neg:
+        mov x0, x2
+
+    .reverse:
+        pop w6
+        strb w6, [x3], #1
+        subs x2, x2, #1
+        b.ne .reverse
+
+    mov w6, #0
+    strb w6, [x3]
+
+    pop x7, x8
+    pop x5, x6
+    pop x4, x1
+    pop x2, x3
+}
+
 macro utoa number, buffer { ; string length -> x0
     push x2, x3
     push x4, x1
@@ -105,10 +156,10 @@ macro print str, str_len { ; total bytes written -> x0
     push x8, x1
     push x2
 
-    adr x1, str
-    mov x2, str_len
     mov x8, #64
     mov x0, #1
+    adr x1, str
+    mov x2, str_len
     svc 0
 
     pop x2
@@ -147,25 +198,91 @@ macro println str, str_len { ; total bytes written -> x0
 }
 
 macro printn times, str, str_len { ; total bytes written -> x0
-    push x3, x4
+    push x9, x10
+    push x11, x12
+    push x13, x14
+    push x15, x1
+    push x2, x3
 
-    local .loop
+    local .exp_fill_loop, .fill_remainder, .write, .exit, .str_to_buf, .exp_buf, .rem_to_buf
 
-    mov x3, #0
-    mov x4, times
+    mov x9, str_len
+    mov x10, times
+    mul x9, x9, x10
 
-    .loop:
-        println str, str_len
+    cbz x9, .exit
 
-        add x3, x3, x0
+    alloc_buf x9
 
-        sub x4, x4, #1
-        cmp x4, #0
-        b.ne .loop
+    cbz x0, .exit
 
-    mov x0, x3
+    mov x11, x0
 
-    pop x3, x4
+    adr x1, str
+    mov x2, x11
+    mov x3, str_len
+
+    .str_to_buf:
+        ldrb w4, [x1], #1
+        strb w4, [x2], #1
+        subs x3, x3, #1
+        b.ne .str_to_buf
+
+    mov x12, str_len
+
+    .exp_fill_loop:
+        mov x13, x9
+        sub x13, x13, x12
+
+        cmp x13, x12
+        b.lt .fill_remainder
+
+        mov x1, x11
+        mov x2, x11
+        add x2, x2, x12
+        mov x3, x12
+
+        .exp_buf:
+            ldrb w4, [x1], #1
+            strb w4, [x2], #1
+            subs x3, x3, #1
+            b.ne .exp_buf
+
+        add x12, x12, x12
+        b .exp_fill_loop
+
+    .fill_remainder:
+        cbz x13, .write
+
+        mov x1, x11
+        mov x2, x11
+        add x2, x2, x12
+        mov x3, x13
+
+        .rem_to_buf:
+            ldrb w4, [x1], #1
+            strb w4, [x2], #1
+            subs x3, x3, #1
+            b.ne .rem_to_buf
+
+    .write:
+        mov x8, #64
+        mov x0, #1
+        mov x1, x11
+        mov x2, x9
+        svc 0
+
+        mov x14, x0
+        free_buf x11, x9
+        mov x0, x14
+
+    .exit:
+
+    pop x2, x3
+    pop x15, x1
+    pop x13, x14
+    pop x11, x12
+    pop x9, x10
 }
 
 
@@ -212,8 +329,8 @@ macro waitpid pid { ; PID or error code -> x0
     push x1, x2
     push x8
 
-    mov x0, pid
     mov x8, #260
+    mov x0, pid
     mov x1, #0
     mov x2, #0
     svc 0

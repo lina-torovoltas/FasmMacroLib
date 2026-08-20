@@ -227,9 +227,9 @@ macro printn times, str, str_len {
         rep movsb
 
     .write:
+        mov eax, 4
         mov ecx, ebx
         mov ebx, 1
-        mov eax, 4
         int 80h
 
     push eax
@@ -350,7 +350,7 @@ macro exec command { ; error code -> eax
     mov eax, 11
     lea ebx, [.path]
     lea ecx, [.argv]
-    xor edx, edx
+    clr edx
     int 80h
 
     exit eax
@@ -394,7 +394,7 @@ macro get_rand { ; random number -> eax
 
     mov eax, 355
     mov ecx, 4
-    xor edx, edx
+    clr edx
     int 80h
 
     mov eax, [esp]

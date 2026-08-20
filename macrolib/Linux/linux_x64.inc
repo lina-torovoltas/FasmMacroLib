@@ -268,8 +268,8 @@ macro fork { ; child PID, 0 or error code -> rax
 macro waitpid pid { ; PID or error code -> rax
 	push rdi rsi rdx
 	
-    mov rdi, pid
     mov rax, 61
+    mov rdi, pid
     clr esi ; same as clr rsi
     clr edx ; same as clr rdx
     syscall
@@ -290,7 +290,7 @@ macro alloc_buf size { ; pointer to allocated buffer -> rax
     mov edx, 3 ; same as mov rdx, 3
     mov r10, 34
     mov r8, -1
-    mov r9, 0
+    clr r9
     syscall
 
     pop r11 rcx r9 r8 r10 rdx rsi rdi
@@ -379,7 +379,7 @@ macro delay_ms ms { ; 0 or error code -> rax
 
     mov eax, 35 ; same as mov rax, 35
     mov rdi, rsp
-    clr edi ; same as clr rdi
+    clr ecx ; same as clr rcx
     syscall
 
     add rsp, 16

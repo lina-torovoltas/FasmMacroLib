@@ -61,10 +61,10 @@ macro print str, str_len { ; total bytes written -> r0
     push r1, r2
     push r7
     
-    mov r1, str
-    mov r2, str_len
     mov r7, #4
     mov r0, #1
+    mov r1, str
+    mov r2, str_len
     svc 0
 
     pop r7
@@ -77,10 +77,10 @@ macro println str, str_len { ; total bytes written -> r0
 
     local .newline, .done
 
-    mov r1, str
-    mov r2, str_len
     mov r7, #4
     mov r0, #1
+    mov r1, str
+    mov r2, str_len
     svc 0
 
     mov r3, r0
@@ -168,8 +168,8 @@ macro waitpid pid { ; PID or error code -> r0
     push r1, r2
     push r7
 
-    mov r0, pid
     mov r7, #114
+    mov r0, pid
     mov r1, #0
     mov r2, #0
     svc 0
