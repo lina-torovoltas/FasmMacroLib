@@ -1,7 +1,10 @@
+.DEFAULT_GOAL := all
+
 DIRS_LINUX   = examples_arm32 examples_arm64 examples_x64 examples_x86
 DIRS_FREEBSD = examples_x64 examples_x86 examples_arm64
 DIRS_DOS     = examples_x16_com examples_x16_exe
 DIRS_MACOS   = examples_arm64
+DIRS_ILLUMOS = examples_x64
 
 ASM_LINUX_X64    = $(wildcard examples/Linux/examples_x64/*.asm)
 ASM_LINUX_X86    = $(wildcard examples/Linux/examples_x86/*.asm)
@@ -13,6 +16,7 @@ ASM_FREEBSD_ARM64  = $(wildcard examples/FreeBSD/examples_arm64/*.asm)
 ASM_DOS_COM      = $(wildcard examples/DOS/examples_x16_com/*.asm)
 ASM_DOS_EXE      = $(wildcard examples/DOS/examples_x16_exe/*.asm)
 ASM_MACOS_ARM64  = $(wildcard examples/MacOS/examples_arm64/*.asm)
+ASM_ILLUMOS_X64  = $(wildcard examples/Illumos/examples_x64/*.asm)
 
 Linux:
 	@for dir in $(DIRS_LINUX); do \
@@ -100,9 +104,19 @@ MacOS:
 		rm -f $$tmpobj $$rawbin $$bridges $$macobj; \
 	done
 
-all: Linux FreeBSD DOS MacOS
+Illumos:
+	@for dir in $(DIRS_ILLUMOS); do \
+		mkdir -p build/Illumos/$$dir >/dev/null 2>&1; \
+	done
+	@for src in $(ASM_ILLUMOS_X64); do \
+		dst=build/Illumos/$${src#examples/Illumos/}; \
+		dst=$${dst%.asm}; \
+		fasm $$src $$dst; \
+	done
+
+all: Linux FreeBSD DOS MacOS Illumos
 
 clean:
 	@rm -rf build
 
-.PHONY: all Linux FreeBSD DOS MacOS clean
+.PHONY: all Linux FreeBSD DOS MacOS Illumos clean
