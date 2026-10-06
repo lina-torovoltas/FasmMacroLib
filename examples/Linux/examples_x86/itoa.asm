@@ -24,6 +24,8 @@ start:
 
     itoa -12345, buffer
     mov edx, eax
+    mov byte [buffer + edx], 0xA
+    inc edx
     printn 2, buffer, edx
 
     mov eax, 1

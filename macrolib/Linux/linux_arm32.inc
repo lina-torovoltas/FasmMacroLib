@@ -30,6 +30,17 @@ macro exit value {
 
 
 
+; Algo Macros
+
+macro xorshift number {
+    mov r0, number
+    eor r0, r0, r0, lsl \#13
+    eor r0, r0, r0, lsr \#17
+    eor r0, r0, r0, lsl \#5
+}
+
+
+
 ; Directory Management Macros
 
 macro mkdir dir_name, permissions { ; error code -> r0

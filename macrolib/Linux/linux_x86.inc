@@ -10,7 +10,96 @@ macro exit value {
 
 
 
-; Convert Macros
+; Algo Macros
+
+macro xorshift number {
+    push edx
+
+    mov eax, number
+    mov edx, eax
+    shl eax, 13
+    xor eax, edx
+
+    mov edx, eax
+    shr eax, 17
+    xor eax, edx
+
+    mov edx, eax
+    shl eax, 5
+    xor eax, edx
+
+    pop edx
+}
+
+macro utohex number, buffer { ; string length -> eax
+    push ecx edx edi esi
+
+    local .loop, .store, .reverse
+
+    mov edi, buffer
+    mov esi, number
+    clr ecx
+
+    .loop:
+        mov eax, esi
+        and eax, 0xF
+        add al, '0'
+        cmp al, '9'
+        jbe .store
+        add al, 'a' - '9' - 1
+    .store:
+        push ax
+        inc ecx
+        shr esi, 4
+        jnz .loop
+
+    mov edx, ecx
+
+    .reverse:
+        pop ax
+        stosb
+        loop .reverse
+
+    mov byte [edi], 0
+    mov eax, edx
+
+    pop esi edi edx ecx
+}
+
+macro utoHEX number, buffer { ; string length -> eax
+    push ecx edx edi esi
+
+    local .loop, .store, .reverse
+
+    mov edi, buffer
+    mov esi, number
+    clr ecx
+
+    .loop:
+        mov eax, esi
+        and eax, 0xF
+        add al, '0'
+        cmp al, '9'
+        jbe .store
+        add al, 'A' - '9' - 1
+    .store:
+        push ax
+        inc ecx
+        shr esi, 4
+        jnz .loop
+
+    mov edx, ecx
+
+    .reverse:
+        pop ax
+        stosb
+        loop .reverse
+
+    mov byte [edi], 0
+    mov eax, edx
+
+    pop esi edi edx ecx
+}
 
 macro itoa number, buffer { ; string length -> eax
     push ecx edi esi edx ebx
@@ -177,7 +266,8 @@ macro printn times, str, str_len {
 
     local .exp_fill_loop, .fill_remainder, .write, .exit
 
-    mov edx, str_len
+    mov ebp, str_len
+    mov edx, ebp
     imul edx, times
 
     test edx, edx
@@ -192,10 +282,10 @@ macro printn times, str, str_len {
 
     mov edi, ebx
     mov esi, str
-    mov ecx, str_len
+    mov ecx, ebp
     rep movsb
 
-    mov eax, str_len
+    mov eax, ebp
 
     .exp_fill_loop:
         mov ecx, edx

@@ -26,6 +26,17 @@ macro exit value {
 
 
 
+; Algo Macros
+
+macro xorshift number {
+    mov x0, number
+    eor x0, x0, x0, lsl \#13
+    eor x0, x0, x0, lsr \#7
+    eor x0, x0, x0, lsl \#17
+}
+
+
+
 ; Console Output Macros
 
 macro print str, str_len { ; total bytes written -> x0

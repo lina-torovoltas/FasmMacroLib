@@ -27,7 +27,14 @@ macro exit code {
 
 
 
-; Convert Macros
+; Algo Macros
+
+macro xorshift number {
+    mov x0, number
+    eor x0, x0, x0, lsl \#13
+    eor x0, x0, x0, lsr \#7
+    eor x0, x0, x0, lsl \#17
+}
 
 macro utoa number, addr { ; string length -> x0
     push x2, x3

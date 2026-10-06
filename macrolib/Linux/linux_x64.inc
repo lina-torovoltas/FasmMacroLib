@@ -10,7 +10,26 @@ macro exit value {
 
 
 
-; Convert Macros
+; Algo Macros
+
+macro xorshift number {
+    push rdx
+
+    mov rax, number
+    mov rdx, rax
+    shl rax, 13
+    xor rax, rdx
+
+    mov rdx, rax
+    shr rax, 7
+    xor rax, rdx
+
+    mov rdx, rax
+    shl rax, 17
+    xor rax, rdx
+
+    pop rdx
+}
 
 macro xoroshiro128pp s0_addr, s1_addr { ; string result -> rax
     push rcx

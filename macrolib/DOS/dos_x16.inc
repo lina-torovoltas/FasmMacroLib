@@ -10,7 +10,26 @@ macro exit code {
 
 
 
-; Convert Macros
+; Algo Macros
+
+xorshift number {
+    push dx
+
+    mov ax, number
+    mov dx, ax
+    shl ax, 7
+    xor ax, dx
+
+    mov dx, ax
+    shr ax, 9
+    xor ax, dx
+
+    mov dx, ax
+    shl ax, 8
+    xor ax, dx
+
+    pop dx
+}
 
 macro utoa number, buffer {
     push ax bx cx dx di
