@@ -1,20 +1,20 @@
 # FasmMacroLib
+![GitHub release](https://img.shields.io/github/v/release/lina-torovoltas/FasmMacroLib)
 ![Language](https://img.shields.io/badge/language%20-%20Assembly-red)
-![CPU](https://img.shields.io/badge/CPU-x86_x64_x16_ARM-orange)
-![OS](https://img.shields.io/badge/OS-Linux_MS--DOS_FreeBSD_MacOS_Illumos_9front-0078D4)
+![OS](https://img.shields.io/badge/OS-Linux_FreeBSD_macOS_illumos_9front_Redox--OS_MS--DOS-0078D4)</br>
+![CPU](https://img.shields.io/badge/CPU-x86--16_x86--32_x86--64_ARM32_ARM64-orange)
 ![License](https://img.shields.io/github/license/lina-torovoltas/FasmMacroLib)
 ![GitHub last commit](https://img.shields.io/github/last-commit/lina-torovoltas/FasmMacrolib)
-![GitHub release](https://img.shields.io/github/v/release/lina-torovoltas/FasmMacroLib)
 ![Downloads](https://img.shields.io/github/downloads/lina-torovoltas/FasmMacroLib/total)</br>
 
 
-FasmMacroLib is a macro library designed to simplify FASM programming upon Linux, MacOS, MS-DOS, Illumos, 9front and FreeBSD.</br>
-It supports Linux (x86, x64, ARM, ARM64), MacOS(ARM64), MS-DOS (x16), Illumos (x64), 9front (x64) and FreeBSD (x86, x64).
+Cross-platform FASM macro library for syscalls and common algorithms.</br>
+
 
 ## Usage
 
 ### 1. Download the library
-Clone the repository directly to get the macro include files:
+Clone the repository to get the macro include files:
 ```bash
 git clone https://github.com/lina-torovoltas/FasmMacroLib
 ```
@@ -24,31 +24,41 @@ All macros are located within the `macrolib` directory, structured by OS and arc
 Provide the correct path within thy `.asm` file.</br>
 Here are some examples:
 ```asm
-include 'macrolib/LINUX/linux_x64.inc'       ; for Linux x64
-include 'macrolib/LINUX/linux_arm64.inc'     ; for Linux ARM64
-include 'macrolib/DOS/dos_x16.inc'           ; for DOS x16
-include 'macrolib/FreeBSD/freebsd_x64.inc'   ; for FreeBSD x64
+include 'macrolib/Linux/linux_x64.inc'       ; for Linux x86-64
+include 'macrolib/Linux/linux_arm64.inc'     ; for Linux ARM64
+include 'macrolib/MacOS/macos_arm64.inc'     ; for macOS ARM64
+include 'macrolib/FreeBSD/freebsd_x64.inc'   ; for FreeBSD x86-64
+include 'macrolib/DOS/dos_x16.inc'           ; for DOS x86-16
 ```
 
-Full documentation of available macros is provided in [macro_usage.md](macro_usage.md).</br>
-Practical code snippets can be perused inside the [examples](examples) folder.
+Practical code snippets, annotated with explanatory comments, may be perused in the [examples](examples) folder.
 
 ## Building Examples
 
-Thou canst download pre-built binaries from the releases section, or compile the source code thyself.</br>
-Ensure that `make`, `fasm`, `llvm`, `clang` and `fasmarm` are installed and available in thy system PATH.</br>
-Compile the examples using make:
+Thou canst download pre-built binaries from the [releases](../../releases) section, or compile the source code thyself.</br></br>
+For x86 targets thou needest `fasm`, for ARM targets [`fasmarm`](https://arm.flatassembler.net/), and for macOS `clang` and `llvm` in addition.</br>
+Ensure that the tools thou needest are installed and available in thy system PATH.</br></br>
+Compile the examples using `make`:
 ```bash
-cd FasmMacrosLib
-make Linux      # Build examples for Linux
-make all        # Build all supported OS targets at once
+cd FasmMacroLib
+make Linux    # Build examples for Linux
+make FreeBSD  # Build examples for FreeBSD
+make MacOS    # Build examples for macOS
+make DOS      # Build examples for DOS
+make Illumos  # Build examples for illumos
+make 9front   # Build examples for 9front
+make Redox    # Build examples for Redox-OS
+make all      # Build all supported OS targets at once (requires every tool above)
+make clean    # Removes build folder
 ```
+
+The built binaries shall be found in `build/<target>/examples_<arch>/`.
 
 ## Contributing
 
 Contributions are welcome!</br>
 If thou hast found a bug or wishest to propose an improvement,</br>
-feel free to open an issue or submit a pull request.
+feel free to open an [issue](../../issues) or submit a [pull request](../../pulls).
 
 ***
-Developed by <a href="https://github.com/lina-torovoltas" style="color:#ff4f00">Lina Torovoltas</a> — © 2025-2026 All rights reserved.
+Developed by <a href="https://lina-kiratorasu.codeberg.page/" style="color:#ff4f00">Lina Kiratorasu</a> — © 2025-2026, released under the [MIT License](LICENSE).
