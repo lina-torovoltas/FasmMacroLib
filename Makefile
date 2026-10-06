@@ -6,6 +6,7 @@ DIRS_DOS     = examples_x16_com examples_x16_exe
 DIRS_MACOS   = examples_arm64
 DIRS_ILLUMOS = examples_x64
 DIRS_9FRONT  = examples_x64
+DIRS_REDOX   = examples_x64
 
 ASM_LINUX_X64      = $(wildcard examples/Linux/examples_x64/*.asm)
 ASM_LINUX_X86      = $(wildcard examples/Linux/examples_x86/*.asm)
@@ -19,6 +20,7 @@ ASM_DOS_EXE        = $(wildcard examples/DOS/examples_x16_exe/*.asm)
 ASM_MACOS_ARM64    = $(wildcard examples/MacOS/examples_arm64/*.asm)
 ASM_ILLUMOS_X64    = $(wildcard examples/Illumos/examples_x64/*.asm)
 ASM_9FRONT_X64     = $(wildcard examples/9front/examples_x64/*.asm)
+ASM_REDOX_X64      = $(wildcard examples/Redox/examples_x64/*.asm)
 
 Linux:
 	@for dir in $(DIRS_LINUX); do \
@@ -126,9 +128,19 @@ Illumos:
 		fasm $$src $$dst; \
 	done
 
-all: Linux FreeBSD DOS MacOS Illumos 9front
+Redox:
+	@for dir in $(DIRS_REDOX); do \
+		mkdir -p build/Redox/$$dir >/dev/null 2>&1; \
+	done
+	@for src in $(ASM_REDOX_X64); do \
+		dst=build/Redox/$${src#examples/Redox/}; \
+		dst=$${dst%.asm}; \
+		fasm $$src $$dst; \
+	done
+
+all: Linux FreeBSD DOS MacOS Illumos 9front Redox
 
 clean:
 	@rm -rf build
 
-.PHONY: all Linux FreeBSD DOS MacOS Illumos 9front clean
+.PHONY: all Linux FreeBSD DOS MacOS Illumos 9front Redox clean
