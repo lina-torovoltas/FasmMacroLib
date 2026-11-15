@@ -1,11 +1,19 @@
-# FasmMacroLib
-![GitHub release](https://img.shields.io/github/v/release/lina-torovoltas/FasmMacroLib)
-![Language](https://img.shields.io/badge/language%20-%20Assembly-red)
-![OS](https://img.shields.io/badge/OS-Linux_FreeBSD_macOS_illumos_9front_Redox--OS_MS--DOS-0078D4)</br>
-![CPU](https://img.shields.io/badge/CPU-x86--16_x86--32_x86--64_ARM32_ARM64-orange)
-![License](https://img.shields.io/github/license/lina-torovoltas/FasmMacroLib)
-![GitHub last commit](https://img.shields.io/github/last-commit/lina-torovoltas/FasmMacrolib)
-![Downloads](https://img.shields.io/github/downloads/lina-torovoltas/FasmMacroLib/total)</br>
+<p align="center">
+  <img src="FasmMacroLib%5B90%5D.png">
+</p>
+
+<h1 align="center">FasmMacroLib</h1>
+
+<p align="center">
+  <img src="https://img.shields.io/github/v/release/lina-torovoltas/FasmMacroLib">
+  <img src="https://img.shields.io/badge/language-Assembly-red"">
+  <img src="https://img.shields.io/badge/OS-Linux_FreeBSD_macOS_illumos_9front_Redox--OS_MS--DOS-0078D4">
+  <br>
+  <img src="https://img.shields.io/badge/CPU-x86--16_x86--32_x86--64_ARM32_ARM64-orange">
+  <img src="https://img.shields.io/github/license/lina-torovoltas/FasmMacroLib">
+  <img src="https://img.shields.io/github/last-commit/lina-torovoltas/FasmMacroLib">
+  <img src="https://img.shields.io/github/downloads/lina-torovoltas/FasmMacroLib/total">
+</p>
 
 
 Cross-platform FASM macro library for syscalls and common algorithms.</br>
